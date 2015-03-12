@@ -1,0 +1,4 @@
+*.rb linguist-language=JavaScript
+
+public/stylesheets/* linguist-documentation=false
+public/stylesheets/* linguist-vendored
