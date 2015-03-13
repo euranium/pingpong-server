@@ -1242,7 +1242,7 @@ body.landing #skel-layers-wrapper {
 	background-repeat: no-repeat;
 	background-size: 100%;
 	color: #fff;
-	padding: 5em 0 27em 0;
+	padding: 5em 0 30em 0;
 	text-align: center;
 }
 
@@ -1306,7 +1306,7 @@ input[type="button"].special,
 /* Main */
 
 #main {
-	padding: 100px 0;
+	padding: 145px 0;
 }
 
 #main > header {
@@ -1330,6 +1330,28 @@ input[type="button"].special,
 
 body.landing #main {
 	margin-top: -14em;
+}
+
+#title {
+	color: #444;
+	text-shadow:
+	/*-1.3px -1.3px 0 #777,  */
+	/*1.3px -1.3px 0 #777,*/
+	/*-1.3px 1.3px 0 #777,*/
+	/*1.3px 1.3px 0 #777;*/
+}
+
+#title h2 {
+	font-size: 5em;
+	line-height: 1em;
+	margin: 0 0 0.5em 0;
+	padding: 0;
+}
+
+#title p {
+	font-size: 2em;
+	margin-bottom: 1.75em;
+	font-weight: thick;
 }
 
 /* Footer */
