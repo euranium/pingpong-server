@@ -1,10 +1,15 @@
+// set up ======================================================
+var util = require('util');
 var express = require('express');
+var app = express();
 var router = express.Router();
 var passport = require('passport'),
 	LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session');
-var url = require('url');
-var app = express();
+var flash = require('connect-flash');
+var bcrypt = require('bcrypt-nodejs');
+
+// passport set up
 app.set('trust proxy', 1);
 app.use(session({
 	genid: function(req) {
@@ -15,11 +20,23 @@ app.use(session({
 	cookie: {secure: true},
 	secret: 'wwu compsci'
 }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
+// db set up
 // file location of the db and app to run it
 var file = './data.db';
 var sqlite3 = require('sqlite3').verbose();
 var db;
+// ============================================================
+
+function generateHash (password) {
+	return bcrypt.hashSync(password, bcrypt.genSaltSunc(8), null);
+}
+function validPassword (password, hash) {
+	return bcrypt.compareSync(password, hash);
+}
 
 function close () {
 	db.close();
@@ -33,20 +50,45 @@ function read (data) {
 	db = new sqlite3.Database(file);
 }
 
-passport.use(new LocalStrategy(
-			function(username, password, done) {
-				User.findOne({ username: username }, function (err, user) {
-					if (err) { return done(err); }
-					if (!user) {
-						return done(null, false, { message: 'Incorrect username.' });
-					}
-					if (!user.validPassword(password)) {
-						return done(null, false, { message: 'Incorrect password.' });
-					}
-					return done(null, user);
-				});
+function isLoggedIn(req, res, next) {
+	// if user is autheniticated, carry on
+	if (req.isAuthenticated())
+		return next();
+	// else redirect to home
+	res.redirect('/');
+}
+
+passport.serializeUser(function (user, done) {
+	done(null, user._id);
+});
+passport.deserializeUser(function (id, done) {
+	User.findById(id, function (err, user) {
+		done(err, user);
+	});
+});
+
+passport.use('login', new LocalStrategy({
+	passReqToCallback : true },
+	function (req, username, password, done) {
+		// check is username exists
+		User.findOne({'username' : username },
+			function (err, user) {
+				if (err) {
+					return done(err);
+				}
+				if (!user) {
+					console.log("user not found");
+					return done(null, false, req.flash('message', 'User Not found'));
+				}
+				if (!isValidPassword(user, password)) {
+					console.log('invalid password');
+					return done(null, flase, req.flash('message', 'Invalid password'));
+				}
+				return done(null, user);
 			}
-			));
+			);
+	}));
+
 passport.use('signup', new LocalStrategy({
     passReqToCallback : true
   },
@@ -95,13 +137,26 @@ passport.use('signup', new LocalStrategy({
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { message: '' });
 });
 
 router.get('/signUp', function(req, res, next) {
-	res.render('signUp', {});
+	res.render('signUp', {error: ''});
 });
 
+// profile section
+router.get('/profile', isLoggedIn, function(req, res) {
+	res.render('profile', {user : req.user});
+});
+
+// logout
+app.get('/logout', function(req, res) {
+	req.logout();
+	res.rederiect('/');
+});
+
+
+// user creation
 router.post('/', function(req, res, next) {
 	var pass0, pass1, user, email;
 	pass0 = req.body.password0;
@@ -109,12 +164,15 @@ router.post('/', function(req, res, next) {
 	user = req.body.name;
 	email = req.body.email;
 	if ((pass0 === '') || (pass1 === '') || (pass0 !== pass1)) {
-		res.render('signUp', {});
+		res.render('signUp', {error: 'passwords did not match'});
 	}
 	if ((user === '') || (email === '')) {
-		res.render('signUp', {});
+		res.render('signUp', {error: 'please enter an email address'});
 	}
-	res.render('index', {});
+	var hash = bcrypt.hashSync(pass0/*, bcrypt.genSaltSunc(8)*/);
+	var data = util.format('Insert Into people (%s, %s, %s)', user, email, hash);
+	console.log(data);
+	res.render('index', {message: 'thank you for signing up'});
 });
 
 module.exports = router;
