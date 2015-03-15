@@ -10,9 +10,11 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
-		<link rel="stylesheet" href="/stylesheets/css/skel.css" />
-		<link rel="stylesheet" href="/stylesheets/css/style.css" />
-		<link rel="stylesheet" href="/stylesheets/css/style-wide.css" />
+		<noscript>
+			<link rel="stylesheet" href="/stylesheets/css/skel.css" />
+			<link rel="stylesheet" href="/stylesheets/css/style.css" />
+			<link rel="stylesheet" href="/stylesheets/css/style-wide.css" />
+		</noscript>
 		<!--[if lte IE 8]><link rel="stylesheet" href="/stylesheets/css/ie/v8.css" /><![endif]-->
 	</head>
 	<body>
@@ -47,13 +49,12 @@
 		<!-- Main -->
 			<section id="main" class="container 75%">
 				<header>
-					<h2>Sign Up</h2>
-					<p>Sign up to keep track of your ping pong skill</p>
+					<h2>Login</h2>
 				</header>
 				<% if (error.length > 0) { %>
 					<div class='alert alert-danger'><%= error %></div>
 				<% } %>
-				<div class="box" id="signUp">
+				<div class="box" id="login">
 					<form method="post" action="/">
 						<div class="row uniform 50%">
 							<div class="6u 12u(mobilep)">
@@ -61,15 +62,14 @@
 							</div>
 						</div>
 						<div class="row uniform 50%">
-							<div class="12u">
+							<div class="6u 12u(mobilep)">
 								<input type="password" name="password1" id="password1" value="" required="" placeholder="password again" />
-								<p id='message'></p>
 							</div>
 						</div>
 						<div class="row uniform">
 							<div class="12u">
 								<ul class="actions align-center">
-									<li><input type="submit" value="Create Account" /></li>
+									<li><input type="submit" value="Login" /></li>
 								</ul>
 							</div>
 						</div>
@@ -98,6 +98,5 @@
 			<script src="/javascripts/js/skel.min.js"></script>
 			<script src="/javascripts/js/skel-layers.min.js"></script>
 			<script src="/javascripts/js/init.js"></script>
-			<script src="/javascripts/signUp.js"></script>
 	</body>
 </html>

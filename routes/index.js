@@ -1,5 +1,6 @@
 // set up ======================================================
 var util = require('util');
+var parse = require('./../scripts/parse.js');
 var express = require('express');
 var app = express();
 var router = express.Router();
@@ -8,7 +9,6 @@ var passport = require('passport'),
 var session = require('express-session');
 var flash = require('connect-flash');
 var bcrypt = require('bcrypt-nodejs');
-var parse = require('./../scripts/parse.js');
 var cookie = require('cookie-parser');
 
 // passport set up
@@ -153,7 +153,7 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/login', function(req, res) {
-	res.render('login', {});
+	res.render('login', {error: ''});
 });
 
 // user creation
@@ -163,26 +163,31 @@ router.post('/signUp', function(req, res, next) {
 	pass1 = req.body.password1;
 	user = req.body.name;
 	email = req.body.email;
-	email = email.replace(/[\@\-\[\]\/\{\}\(\)\*\.\+\?\\\^\$\|]/g, "\\$&");
+	email = parse.isEmail(email);
 	if ((pass0 === '') || (pass1 === '') || (pass0 !== pass1)) {
 		res.render('signUp', {error: 'passwords did not match'});
 	}
-	if ((user === '') || (email === '')) {
-		res.render('signUp', {error: 'please enter an email address'});
+	else if (user === '') {
+		res.render('signUp', {error: 'please enter a user name'});
 	}
-	db = new sqlite3.Database(file);
-	var hash = bcrypt.hashSync(pass0/*, bcrypt.genSaltSunc(8)*/);
-	var query = util.format("Insert Into people Values ('%s', '%s', '%s')", user, email, hash);
-	console.log(query);
-	db.run(query, function (err, row) {
-		if (err !== null) {
-			console.log('error ' + err);
-			res.render('signUp', {'error': 'user name or password already taken' });
-		} else {
-			res.redirect('/');
-			//res.render('index', {message: 'thank you for signing up'});
-		}
-	});
+	else if (email === false) {
+		res.render('signUp', {error: 'please enter a valid email address'});
+	}
+	else {
+		db = new sqlite3.Database(file);
+		var hash = bcrypt.hashSync(pass0/*, bcrypt.genSaltSunc(8)*/);
+		var query = util.format("Insert Into people Values ('%s', '%s', '%s')", user, email, hash);
+		console.log(query);
+		db.run(query, function (err, row) {
+			if (err !== null) {
+				console.log('error ' + err);
+				res.render('signUp', {'error': 'user name or password already taken' });
+			} else {
+				res.redirect('/');
+				//res.render('index', {message: 'thank you for signing up'});
+			}
+		});
+	}
 });
 
 module.exports = router;
