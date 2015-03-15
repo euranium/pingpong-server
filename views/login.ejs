@@ -39,15 +39,41 @@
 								</li>
 							</ul>
 						</li>
-						<li><a href="/signUp" class="button">Sign Up</a></li>
+						<li><a href="#" class="button">Sign Up</a></li>
 					</ul>
 				</nav>
 			</header>
 
 		<!-- Main -->
 			<section id="main" class="container 75%">
-				<div class='alert alert-danger'><%= error %></div>
-					<%= error %>	
+				<header>
+					<h2>Sign Up</h2>
+					<p>Sign up to keep track of your ping pong skill</p>
+				</header>
+				<% if (error.length > 0) { %>
+					<div class='alert alert-danger'><%= error %></div>
+				<% } %>
+				<div class="box" id="signUp">
+					<form method="post" action="/">
+						<div class="row uniform 50%">
+							<div class="6u 12u(mobilep)">
+								<input type="text" name="name" id="name" value="" required="" placeholder="User Name" />
+							</div>
+						</div>
+						<div class="row uniform 50%">
+							<div class="12u">
+								<input type="password" name="password1" id="password1" value="" required="" placeholder="password again" />
+								<p id='message'></p>
+							</div>
+						</div>
+						<div class="row uniform">
+							<div class="12u">
+								<ul class="actions align-center">
+									<li><input type="submit" value="Create Account" /></li>
+								</ul>
+							</div>
+						</div>
+					</form>
 				</div>
 			</section>
 

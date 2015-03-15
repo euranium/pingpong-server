@@ -8,6 +8,8 @@ var passport = require('passport'),
 var session = require('express-session');
 var flash = require('connect-flash');
 var bcrypt = require('bcrypt-nodejs');
+var parse = require('./../scripts/parse.js');
+var cookie = require('cookie-parser');
 
 // passport set up
 app.set('trust proxy', 1);
@@ -30,10 +32,6 @@ var file = './data.db';
 var sqlite3 = require('sqlite3').verbose();
 var db;
 // ============================================================
-
-function generateHash (password) {
-	return bcrypt.hashSync(password, bcrypt.genSaltSunc(8), null);
-}
 function validPassword (password, hash) {
 	return bcrypt.compareSync(password, hash);
 }
@@ -42,12 +40,12 @@ function close () {
 	db.close();
 }
 // write to the db
-function write (data) {
+function enter (data) {
 	db.run(data, close);
 }
 //open a connection to the db
-function read (data) {
-	db = new sqlite3.Database(file);
+function write (data) {
+	db = new sqlite3.Database(file, enter(data));
 }
 
 function isLoggedIn(req, res, next) {
@@ -78,11 +76,11 @@ passport.use('login', new LocalStrategy({
 				}
 				if (!user) {
 					console.log("user not found");
-					return done(null, false, req.flash('message', 'User Not found'));
+					return done(null, false);
 				}
 				if (!isValidPassword(user, password)) {
 					console.log('invalid password');
-					return done(null, flase, req.flash('message', 'Invalid password'));
+					return done(null, flase);
 				}
 				return done(null, user);
 			}
@@ -104,8 +102,7 @@ passport.use('signup', new LocalStrategy({
         // already exists
         if (user) {
           console.log('User already exists');
-          return done(null, false,
-             req.flash('message','User Already Exists'));
+          return done(null, false);
         } else {
           // if there is no user with that email
           // create the user
@@ -137,7 +134,7 @@ passport.use('signup', new LocalStrategy({
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { message: '' });
+	res.render('index', { message: '' });
 });
 
 router.get('/signUp', function(req, res, next) {
@@ -150,29 +147,42 @@ router.get('/profile', isLoggedIn, function(req, res) {
 });
 
 // logout
-app.get('/logout', function(req, res) {
+router.get('/logout', function(req, res) {
 	req.logout();
 	res.rederiect('/');
 });
 
+router.get('/login', function(req, res) {
+	res.render('login', {});
+});
 
 // user creation
-router.post('/', function(req, res, next) {
+router.post('/signUp', function(req, res, next) {
 	var pass0, pass1, user, email;
 	pass0 = req.body.password0;
 	pass1 = req.body.password1;
 	user = req.body.name;
 	email = req.body.email;
+	email = email.replace(/[\@\-\[\]\/\{\}\(\)\*\.\+\?\\\^\$\|]/g, "\\$&");
 	if ((pass0 === '') || (pass1 === '') || (pass0 !== pass1)) {
 		res.render('signUp', {error: 'passwords did not match'});
 	}
 	if ((user === '') || (email === '')) {
 		res.render('signUp', {error: 'please enter an email address'});
 	}
+	db = new sqlite3.Database(file);
 	var hash = bcrypt.hashSync(pass0/*, bcrypt.genSaltSunc(8)*/);
-	var data = util.format('Insert Into people (%s, %s, %s)', user, email, hash);
-	console.log(data);
-	res.render('index', {message: 'thank you for signing up'});
+	var query = util.format("Insert Into people Values ('%s', '%s', '%s')", user, email, hash);
+	console.log(query);
+	db.run(query, function (err, row) {
+		if (err !== null) {
+			console.log('error ' + err);
+			res.render('signUp', {'error': 'user name or password already taken' });
+		} else {
+			res.redirect('/');
+			//res.render('index', {message: 'thank you for signing up'});
+		}
+	});
 });
 
 module.exports = router;

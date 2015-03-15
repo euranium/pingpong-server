@@ -1,6 +1,6 @@
 Create Table If Not Exists people (
 	name String Primary Key,
-	email String
+	email String Unique,
 	password String
 	);
 Create Table If Not Exists facebook(
