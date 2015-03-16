@@ -57,84 +57,57 @@ function isLoggedIn(req, res, next) {
 }
 
 passport.serializeUser(function (user, done) {
-	done(null, user._id);
+	done(null, user.id);
 });
-passport.deserializeUser(function (id, done) {
-	User.findById(id, function (err, user) {
-		done(err, user);
+passport.deserializeUser(function (name, done) {
+	db = new sqlite3.Database(file);
+	var query = uitil.format("Select rowid As name, password Where name = '%s'", name);
+	db.run(query, function(err, row) {
+		if ((err !== null) || (!row)) {
+			return done(null, false);
+		}
+		else {
+			return done(null, row.name);
+		}
 	});
 });
 
-passport.use('login', new LocalStrategy({
-	passReqToCallback : true },
-	function (req, username, password, done) {
-		// check is username exists
-		User.findOne({'username' : username },
-			function (err, user) {
-				if (err) {
-					return done(err);
-				}
-				if (!user) {
-					console.log("user not found");
-					return done(null, false);
-				}
-				if (!isValidPassword(user, password)) {
-					console.log('invalid password');
-					return done(null, flase);
-				}
-				return done(null, user);
+passport.use(new LocalStrategy(
+			function(username, password, done) {
+				db = new sqlite3.Database(file);
+				console.log(username);
+				var query = util.format("Select name, password From people Where name = '%s'", username);
+				console.log(query);
+				db.all(query, function(err, row) {
+					console.log(row);
+					if ((err !== null) || (!row)) {
+						console.log(err);
+						return done(null, false);
+					}
+					var comp = bcrypt.compareSync(password, row[0].password);
+					if (comp) {
+						return done(null, row[0].name);
+					} else {
+						return done(null, false);
+					}
+				});
 			}
-			);
-	}));
-
-passport.use('signup', new LocalStrategy({
-    passReqToCallback : true
-  },
-  function(req, username, password, done) {
-    findOrCreateUser = function(){
-      // find a user in Mongo with provided username
-      User.findOne({'username':username},function(err, user) {
-        // In case of any error return
-        if (err){
-          console.log('Error in SignUp: '+err);
-          return done(err);
-        }
-        // already exists
-        if (user) {
-          console.log('User already exists');
-          return done(null, false);
-        } else {
-          // if there is no user with that email
-          // create the user
-          var newUser = new User();
-          // set the user's local credentials
-          newUser.username = username;
-          newUser.password = createHash(password);
-          newUser.email = req.param('email');
-          newUser.firstName = req.param('firstName');
-          newUser.lastName = req.param('lastName');
-
-          // save the user
-          newUser.save(function(err) {
-            if (err){
-              console.log('Error in Saving user: '+err);
-              throw err;
-            }
-            console.log('User Registration succesful');
-            return done(null, newUser);
-          });
-        }
-      });
-    };
-    // Delay the execution of findOrCreateUser and execute
-    // the method in the next tick of the event loop
-    process.nextTick(findOrCreateUser);
-  })
-);
+));
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-	res.render('index', { message: '' });
+	db = new sqlite3.Database(file);
+	var query = util.format("Select name, password From people Where name = '%s'", 'jon');
+	db.all(query, function(err, row) {
+		console.log(row);
+		if (err !== null) {
+			console.log(err);
+			res.render('index', {message: err});
+		} else {
+			console.log(row);
+			res.render('index', { message: row });
+		}
+	});
 });
 
 router.get('/signUp', function(req, res, next) {
@@ -154,6 +127,39 @@ router.get('/logout', function(req, res) {
 
 router.get('/login', function(req, res) {
 	res.render('login', {error: ''});
+});
+
+router.post('/login', passport.authenticate('local',
+			{ successRedirect: '/',
+				failureRedirect: '/login',
+				failureFlash: false
+			})
+);
+/*
+router.post('/login', function(req, res) {
+	var pass = req.body.password;
+	var name = req.body.name;
+	if ((pass === '') || (name === '') || (pass === undefined) || (name === undefined)) {
+		res.render('login', {error: 'user name or password Incorect'});
+	} else {
+		db = new sqlite3.Database(file);
+		var query = uitil.format("Select rowid As name, password Where name = '%s'", name);
+		console.log(query);
+		db.all(query, function (err, row) {
+			if (err !== null) {
+				console.log(err);
+				res.render('login', {error: err});
+			} else {
+				res.render('login', {error: rowid});
+			}
+		});
+	}
+});
+*/
+
+
+router.post('/', function(req, res, next) {
+	res.render('index', {message: ''});
 });
 
 // user creation

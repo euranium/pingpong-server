@@ -188,7 +188,7 @@ header h6 + p {
 	margin-top: -0.5em;
 	line-height: 1.5em;
 }
-
+12
 header.major {
 	padding: 1em 0;
 	text-align: center;
@@ -988,6 +988,10 @@ input[type="button"]:disabled,
 	padding-top: 3em;
 }
 
+#header form {
+	display: contents;
+}
+
 body.landing #skel-layers-wrapper {
 	padding-top: 0;
 	background-color: #e0e0e0;
@@ -1035,6 +1039,40 @@ body.landing #skel-layers-wrapper {
 	right: 0.75em;
 	top: 0;
 	vertical-align: middle;
+}
+
+#signIn{
+	color: #777;
+	width: 240px;
+	height: 185px;
+	border: black;
+	background-color: #fff;
+	border-radius: 6px;
+	box-shadow: 0 0 19px 5px rgba(66, 66, 66, 1);
+}
+#signIn form {
+	font-size: 1em;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+#signIn #password {
+	margin-top: 10px;
+	margin-right: auto;
+	margin-left: auto;
+	width: 220px;
+	font-size: 15px;
+}
+#signIn #name {
+	font-size: 15px;
+	width: 220px;
+	margin-right: auto;
+	margin-left: auto;
+}
+#signIn #submit {
+	font-size: 15px;
+	margin-top: 10px;
+	width: 220px;
+	margin-left: 10px;
 }
 
 #header nav > ul {
@@ -1254,7 +1292,7 @@ body.landing #skel-layers-wrapper {
 	-webkit-text-stroke: 1px black;
 	color: white;
 	text-shadow:
-	-1.3px -1.3px 0 #000,  
+	-1.3px -1.3px 0 #000,
 	1.3px -1.3px 0 #000,
 	-1.3px 1.3px 0 #000,
 	1.3px 1.3px 0 #000;
