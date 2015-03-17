@@ -13,6 +13,7 @@ var sql = require('sqlite3').verbose();
 var flash = require('connect-flash');
 var port = process.env.PORT || 8000;
 var bcrypt = require('bcrypt-nodejs');
+var crypto = require('crypto');
 
 // ==========================================================
 var app = express();
