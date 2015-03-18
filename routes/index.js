@@ -35,7 +35,7 @@ app.use(session({
 	genid: function(req) {
 		return genUuid(); // use UUIDs for session IDs
 	},
-	resave: false,
+	resave: true,
 	saveUninitialized: true,
 	cookie: {secure: true},
 	secret: 'wwu compsci'
@@ -87,7 +87,7 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (name, done) {
 	login = function () {
 		db = new sqlite3.Database(file);
-		var query = util.format("Select rowid As name, password Where id = '%s'", id);
+		var query = util.format("Select rowid As id, name, password Where id = '%s'", id);
 		console.log(query);
 		db.run(query, function(err, row) {
 			if ((err !== null) || (!row)) {
@@ -125,7 +125,7 @@ passport.use(new LocalStrategy(
 
 /* GET home page. */
 app.get('/', function (req, res, next) {
-	console.log(req.session.passport);
+	console.log(req.user);
 	res.render('index', {message: req.isAuthenticated()});
 });
 
