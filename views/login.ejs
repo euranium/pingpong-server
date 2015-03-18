@@ -25,7 +25,7 @@
 					<ul>
 						<li><a href="/">Home</a></li>
 						<li>
-						<a href="/login" class="icon fa-angle-down">Login In</a>
+						<a href="#" id='logger' class="icon fa-angle-down">Login In</a>
 						<ul id='signIn'>
 							<li>
 							<form id='logIn' method='post' action='/login'>
@@ -40,7 +40,7 @@
 								</li>
 							</ul>
 						</li>
-						<li><a href="#" class="button">Sign Up</a></li>
+						<li><a href="/signUp" class="button">Sign Up</a></li>
 					</ul>
 				</nav>
 			</header>
@@ -53,16 +53,16 @@
 				<% if (error.length > 0) { %>
 					<div class='alert alert-danger'><%= error %></div>
 				<% } %>
-				<div class="box" id="login">
+				<div class="box" id="login" style='width: 500px; margin-left: auto; margin-right: auto; background: #aaa'>
 					<form method="post" action="/login">
 						<div class="row uniform 50%">
-							<div class="6u 12u(mobilep)">
+							<div class="12u">
 								<input type="text" name="username" id="name" value="" required="" placeholder="User Name" />
 							</div>
 						</div>
 						<div class="row uniform 50%">
-							<div class="6u 12u(mobilep)">
-								<input type="password" name="password" id="password1" value="" required="" placeholder="password again" />
+							<div class="12u">
+								<input type="password" name="password" id="password1" value="" required="" placeholder="password" />
 							</div>
 						</div>
 						<div class="row uniform">
@@ -97,5 +97,6 @@
 			<script src="/javascripts/js/skel.min.js"></script>
 			<script src="/javascripts/js/skel-layers.min.js"></script>
 			<script src="/javascripts/js/init.js"></script>
+			<script src="/javascripts/js/form.js"></script>
 	</body>
 </html>

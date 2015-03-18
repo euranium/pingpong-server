@@ -31,15 +31,6 @@ function uuidFromBytes(rnd) {
   rnd.shift();
   return rnd.join('-');
 }
-
-// app set up
-app.use(express.static('public'));
-app.use(cookie());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(passport.initialize());
-app.use(passport.session());
-app.set('trust proxy', 1);
 app.use(session({
 	genid: function(req) {
 		return genUuid(); // use UUIDs for session IDs
@@ -49,6 +40,15 @@ app.use(session({
 	cookie: {secure: true},
 	secret: 'wwu compsci'
 }));
+// app set up
+app.use(express.static('public'));
+app.use(cookie());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+//app.set('trust proxy', 1);
+
 // db set up
 // file location of the db and app to run it
 var file = './data.db';
@@ -81,40 +81,41 @@ function isLoggedIn (req, res, next) {
 }
 
 passport.serializeUser(function (user, done) {
-	//console.log(user);
-	done(null, user);
+	console.log(user.id);
+	return done(null, user.id);
 });
 passport.deserializeUser(function (name, done) {
-	db = new sqlite3.Database(file);
-	var query = util.format("Select rowid As name, password Where name = '%s'", name);
-	console.log(query);
-	db.run(query, function(err, row) {
-		if ((err !== null) || (!row)) {
-			console.log(err);
-			return done(null, false);
-		}
-		else {
-			console.log(row[0].name);
-			return done(null, row.name);
-		}
-	});
+	login = function () {
+		db = new sqlite3.Database(file);
+		var query = util.format("Select rowid As name, password Where id = '%s'", id);
+		console.log(query);
+		db.run(query, function(err, row) {
+			if ((err !== null) || (!row)) {
+				console.log(err);
+				return done(null, false);
+			}
+			console.log(row[0].id);
+			return done(null, row[0].id);
+		});
+	};
+	process.nextTick(login);
 });
 
 passport.use(new LocalStrategy(
 			function(username, password, done) {
 				db = new sqlite3.Database(file);
 				//console.log(username);
-				var query = util.format("Select name, password From people Where name = '%s'", username);
+				var query = util.format("Select id, name, password From people Where name = '%s'", username);
 				//console.log(query);
 				db.all(query, function(err, row) {
 					//console.log(row);
-					if ((err !== null) || (!row)) {
+					if ((err !== null) || (row[0].password === undefined)) {
 						console.log(err);
 						return done(null, false);
 					}
 					var comp = bcrypt.compareSync(password, row[0].password);
 					if (comp) {
-						return done(null, row[0].name);
+						return done(null, row[0]);
 					} else {
 						return done(null, false);
 					}
@@ -124,7 +125,7 @@ passport.use(new LocalStrategy(
 
 /* GET home page. */
 app.get('/', function (req, res, next) {
-	console.log(req);
+	console.log(req.session.passport);
 	res.render('index', {message: req.isAuthenticated()});
 });
 
@@ -153,7 +154,8 @@ app.post('/login', passport.authenticate('local',
 				failureFlash: false
 			}),
 		function(req, res) {
-			res.login();
+			req.session.passport.user = user.id;
+			console.log(req.session.passport);
 		}
 );
 
@@ -181,12 +183,12 @@ app.post('/signUp', function(req, res, next) {
 	else {
 		db = new sqlite3.Database(file);
 		var hash = bcrypt.hashSync(pass0/*, bcrypt.genSaltSunc(8)*/);
-		var query = util.format("Insert Into people Values ('%s', '%s', '%s')", user, email, hash);
+		var query = util.format("Insert Into people (name, email, password) Values ('%s', '%s', '%s')", user, email, hash);
 		console.log(query);
 		db.run(query, function (err, row) {
 			if (err !== null) {
 				console.log('error ' + err);
-				res.render('signUp', {'error': 'user name or password already taken' });
+				res.render('signUp', {'error': 'user name already taken' });
 			} else {
 				res.redirect('/');
 				//res.render('index', {message: 'thank you for signing up'});

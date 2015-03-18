@@ -1,5 +1,6 @@
 Create Table If Not Exists people (
-	name String Primary Key,
+	id Integer Primary Key AUTOINCREMENT,
+	name String Unique,
 	email String Unique,
 	password String
 	);

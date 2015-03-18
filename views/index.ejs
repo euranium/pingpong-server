@@ -26,12 +26,12 @@
 					<ul>
 						<li><a href="/">Home</a></li>
 						<li>
-						<a href="/login" class="icon fa-angle-down">Login In</a>
+						<a href="#" id='logger' class="icon fa-angle-down">Login In</a>
 						<ul id='signIn'>
 							<li>
 							<form id='logIn' method='post' action='/login'>
 								<div class="12u">
-									<input type="text" name="name" id="name" value="" required="" placeholder="User Name" />
+									<input type="text" name="username" id="name" value="" required="" placeholder="User Name" />
 								</div>
 								<div class="12u">
 									<input type="password" name="password" id="password" value="" required="" placeholder="password" />
@@ -126,26 +126,7 @@
 				</div>
 
 			</section>
-
-		<!-- CTA -->
-			<section id="cta">
-
-				<h2>Sign up for beta access</h2>
-				<p>Blandit varius ut praesent nascetur eu penatibus nisi risus faucibus nunc.</p>
-
-				<form>
-					<div class="row uniform 50%">
-						<div class="8u 12u(mobilep)">
-							<input type="email" name="email" id="email" placeholder="Email Address" />
-						</div>
-						<div class="4u 12u(mobilep)">
-							<input type="submit" value="Sign Up" class="fit" />
-						</div>
-					</div>
-				</form>
-
-			</section>
-
+		
 		<!-- Footer -->
 			<footer id="footer">
 				<ul class="icons">
@@ -167,5 +148,6 @@
 			<script src="/javascripts/js/skel.min.js"></script>
 			<script src="/javascripts/js/skel-layers.min.js"></script>
 			<script src="/javascripts/js/init.js"></script>
+			<script src="/javascripts/form.js"></script>
 	</body>
 </html>
