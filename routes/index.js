@@ -81,8 +81,7 @@ function isLoggedIn (req, res, next) {
 }
 
 passport.serializeUser(function (user, done) {
-	console.log(user.id);
-	return done(null, user.id);
+	return done(null, user);
 });
 passport.deserializeUser(function (name, done) {
 	login = function () {
@@ -104,7 +103,6 @@ passport.deserializeUser(function (name, done) {
 passport.use(new LocalStrategy(
 			function(username, password, done) {
 				db = new sqlite3.Database(file);
-				//console.log(username);
 				var query = util.format("Select id, name, password From people Where name = '%s'", username);
 				//console.log(query);
 				db.all(query, function(err, row) {
@@ -125,7 +123,7 @@ passport.use(new LocalStrategy(
 
 /* GET home page. */
 app.get('/', function (req, res, next) {
-	console.log(req.user);
+	console.log("index ", req.session);
 	res.render('index', {message: req.isAuthenticated()});
 });
 
@@ -154,8 +152,8 @@ app.post('/login', passport.authenticate('local',
 				failureFlash: false
 			}),
 		function(req, res) {
-			req.session.passport.user = user.id;
-			console.log(req.session.passport);
+			//req.session.user = req.user;
+			console.log('session');
 		}
 );
 
