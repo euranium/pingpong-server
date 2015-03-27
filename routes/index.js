@@ -1,3 +1,4 @@
+/*jshint esnext: true */
 // set up ======================================================
 var util = require('util');
 var crypto = require('crypto');
@@ -61,7 +62,6 @@ function isLoggedIn (req, res, next) {
 		return res.redirect('/login');
 	}
 	var name = cookie.signedCookie(user, 'wwu compscie');
-	console.log('logged in', name);
 	if (name) {
 		return next();
 	}
@@ -124,15 +124,31 @@ app.get('/', function (req, res) {
 });
 
 app.get('/signUp', function(req, res, next) {
-	
 	res.render('signUp', {error: '', user: logged(req.cookies.user)});
 });
 
 // profile section
 app.get('/profile', isLoggedIn, function(req, res) {
-	console.log('here');
 	var user = logged(req.cookies.user);
-	res.render('profile', {'user' : user});
+	db = new sqlite3.Database(file);
+	var query = util.format("Select player, win From score Where player = '%s'", user);
+	db.all(query, function(err, row) {
+		if (err) {
+			console.log('profile error', err);
+			res.render('error', {error: err});
+		} else {
+			console.log('row', row);
+			var win = 0, loss = 0;
+			for (var i of row) {
+				if (i.win === 1) {
+					win++;
+				} else {
+					loss++;
+				}
+			}
+			res.render('profile', {'user': user, 'win': win, 'loss': loss});
+		}
+	});
 });
 
 // logout

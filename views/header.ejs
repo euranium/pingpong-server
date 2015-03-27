@@ -25,8 +25,8 @@
 					<ul>
 						<li><a href="/">Home</a></li>
 						<li>
+						<% if (user === false) { %>
 						<a href="#" id='logger' class="icon fa-angle-down">Login In</a>
-						<% if (user == false) { %>
 						<ul id='signIn'>
 							<li>
 							<form id='logIn' method='post' action='/login'>
@@ -43,6 +43,7 @@
 						</li>
 						<li><a href="/signUp" class="button">Sign Up</a></li>
 						<% } else { %>
+						<li><a href="/challege">Challege</a></li>
 						<li><a href="/profile"><%= user %></a></li>
 						<li><a href="/logout">Logout</a></li>
 						<% } %>
