@@ -13,7 +13,6 @@ var cookie = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 module.exports = genUuid;
-
 var genUuid = parse.genUuid;
 app.use(session({
 	genid: function(req) {
@@ -44,7 +43,6 @@ var db;
 function validPassword (password, hash) {
 	return bcrypt.compareSync(password, hash);
 }
-
 function close () {
 	db.close();
 }
@@ -58,15 +56,22 @@ function write (data) {
 }
 
 function isLoggedIn (req, res, next) {
-	var user = req.cookie.user;
-	var name = cookie.signedCookie(name, 'wwu compscie');
+	var user = req.cookies.user;
+	if (!user) {
+		return res.redirect('/login');
+	}
+	var name = cookie.signedCookie(user, 'wwu compscie');
+	console.log('logged in', name);
 	if (name) {
 		return next();
 	}
 	res.redirect('/');
 }
 function logged (user) {
-	return cookie.signedCookie(user, 'wwu compscie');
+	if (user !== undefined) {
+		return cookie.signedCookie(user, 'wwu compscie');
+	}
+	return false;
 }
 
 passport.serializeUser(function (user, done) {
@@ -112,33 +117,32 @@ passport.use(new LocalStrategy(
 
 /* GET home page. */
 app.get('/', function (req, res) {
-	if (req.cookies.user !== undefined) {
-		console.log('cookies: ', req.cookies);
-		var user = logged(req.cookie.user);
-		res.render('index', {message: ''});
-	}
-	else {
-		res.render('index', {message: ''});
-	}
+	console.log('cookies: ', req.cookies);
+	var user = logged(req.cookies.user);
+	console.log('user', user);
+	res.render('index', {'user': user});
 });
 
 app.get('/signUp', function(req, res, next) {
-	res.render('signUp', {error: ''});
+	
+	res.render('signUp', {error: '', user: logged(req.cookies.user)});
 });
 
 // profile section
 app.get('/profile', isLoggedIn, function(req, res) {
-	res.render('profile', {user : req.user});
+	console.log('here');
+	var user = logged(req.cookies.user);
+	res.render('profile', {'user' : user});
 });
 
 // logout
 app.get('/logout', function(req, res) {
-	req.logout();
-	res.rederiect('/');
+	res.clearCookie('user');
+	res.redirect('/');
 });
 
 app.get('/login', function(req, res) {
-	res.render('login', {error: ''});
+	res.render('login', {error: '', user: logged(req.cookies.user)});
 });
 
 app.post('/login', passport.authenticate('local', {/*successRedirect: '/', */failureRedirect: '/login', failureFlash: false}), function(req, res, next) {
@@ -148,13 +152,8 @@ app.post('/login', passport.authenticate('local', {/*successRedirect: '/', */fai
 	else {
 		req.secret = 'wwu compscie';
 		res.cookie('user', req.user.name, {maxAge: 3600000, secure: false,  signed: true}); 
-		res.cookie('user1', req.user.name, {maxAge: 3600000, secure: false,  signed: false}); 
 		res.redirect('/');
 	}
-});
-
-app.post('/', function(req, res, next) {
-	res.render('index', {message: ''});
 });
 
 // user creation
@@ -184,6 +183,8 @@ app.post('/signUp', function(req, res, next) {
 				console.log('error ' + err);
 				res.render('signUp', {'error': 'user name already taken' });
 			} else {
+				req.secret = 'wwu compscie';
+				res.cookie('user', user, {maxAge: 3600000, secure: false,  signed: true}); 
 				res.redirect('/');
 				//res.render('index', {message: 'thank you for signing up'});
 			}

@@ -53,7 +53,8 @@ if (app.get('env') === 'development') {
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
-            error: err
+            error: err,
+			user: false
         });
     });
 }
@@ -62,9 +63,11 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
+	console.log('error', err);
     res.render('error', {
         message: err.message,
-        error: {}
+        error: {},
+		user: false
     });
 });
 

@@ -4,18 +4,12 @@
 	html5up.net | @n33co
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
-
-<% include header %>
+<% include header.ejs %>
 		<!-- Main -->
 			<section id="main" class="container 75%">
 				<header>
-					<h2>Error</h2>
-					<p>Sorry, there wsa an error</p>
-				</header> 
-				<div class='alert alert-danger'><%= error %></div>
-					<%= error %>	
-				</div>
+					<h2>Profile</h2>
+					<p><%= user %></p>
+				</header>
 			</section>
-
-		<!-- Footer -->
-<% include footer %>
+<% include footer.ejs %>

@@ -26,6 +26,6 @@ Create Table If Not Exists google (
 	);
 
 Create Table If Not Exists score (
-	winner String,
-	second String
+	player String,
+	win Integer
 	);
