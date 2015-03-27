@@ -13,31 +13,18 @@ var cookie = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 module.exports = genUuid;
-function genUuid(callback) {
-	if (typeof(callback) !== 'function') {
-		return uuidFromBytes(crypto.randomBytes(16));
-	}
 
-	crypto.randomBytes(16, function(err, rnd) {
-		if (err) return callback(err);
-		callback(null, uuidFromBytes(rnd));
-	});
-}
-
-function uuidFromBytes(rnd) {
-  rnd[6] = (rnd[6] & 0x0f) | 0x40;
-  rnd[8] = (rnd[8] & 0x3f) | 0x80;
-  rnd = rnd.toString('hex').match(/(.{8})(.{4})(.{4})(.{4})(.{12})/);
-  rnd.shift();
-  return rnd.join('-');
-}
+var genUuid = parse.genUuid;
 app.use(session({
 	genid: function(req) {
 		return genUuid(); // use UUIDs for session IDs
 	},
 	resave: true,
 	saveUninitialized: true,
-	cookie: {secure: true},
+	cookie: {
+		secure: true,
+		maxAge: 35000000
+	},
 	secret: 'wwu compsci'
 }));
 // app set up
@@ -47,8 +34,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-//app.set('trust proxy', 1);
-
 // db set up
 // file location of the db and app to run it
 var file = './data.db';
@@ -73,11 +58,15 @@ function write (data) {
 }
 
 function isLoggedIn (req, res, next) {
-	if (req.isAuthenticated()) {
+	var user = req.cookie.user;
+	var name = cookie.signedCookie(name, 'wwu compscie');
+	if (name) {
 		return next();
-	} else {
-		res.redirect('/');
 	}
+	res.redirect('/');
+}
+function logged (user) {
+	return cookie.signedCookie(user, 'wwu compscie');
 }
 
 passport.serializeUser(function (user, done) {
@@ -87,14 +76,14 @@ passport.deserializeUser(function (name, done) {
 	login = function () {
 		db = new sqlite3.Database(file);
 		var query = util.format("Select rowid As id, name, password Where id = '%s'", id);
-		console.log(query);
+		console.log('deserialize', query);
 		db.run(query, function(err, row) {
 			if ((err !== null) || (!row)) {
 				console.log(err);
 				return done(null, false);
 			}
 			console.log(row[0].id);
-			return done(null, row[0].id);
+			return done(null, row[0].name);
 		});
 	};
 	process.nextTick(login);
@@ -106,9 +95,9 @@ passport.use(new LocalStrategy(
 				var query = util.format("Select id, name, password From people Where name = '%s'", username);
 				//console.log(query);
 				db.all(query, function(err, row) {
-					//console.log(row);
-					if ((err !== null) || (row[0].password === undefined)) {
-						console.log(err);
+					//console.log('here', row[0]);
+					if ((err !== null) || (row[0] === undefined)) {
+						console.log('login err', err);
 						return done(null, false);
 					}
 					var comp = bcrypt.compareSync(password, row[0].password);
@@ -122,9 +111,15 @@ passport.use(new LocalStrategy(
 ));
 
 /* GET home page. */
-app.get('/', function (req, res, next) {
-	console.log("index ", req.session);
-	res.render('index', {message: req.isAuthenticated()});
+app.get('/', function (req, res) {
+	if (req.cookies.user !== undefined) {
+		console.log('cookies: ', req.cookies);
+		var user = logged(req.cookie.user);
+		res.render('index', {message: ''});
+	}
+	else {
+		res.render('index', {message: ''});
+	}
 });
 
 app.get('/signUp', function(req, res, next) {
@@ -146,16 +141,17 @@ app.get('/login', function(req, res) {
 	res.render('login', {error: ''});
 });
 
-app.post('/login', passport.authenticate('local',
-			{ successRedirect: '/',
-				failureRedirect: '/login',
-				failureFlash: false
-			}),
-		function(req, res) {
-			//req.session.user = req.user;
-			console.log('session');
-		}
-);
+app.post('/login', passport.authenticate('local', {/*successRedirect: '/', */failureRedirect: '/login', failureFlash: false}), function(req, res, next) {
+	if (null === req.user) {
+		res.redirect('/login');
+	}
+	else {
+		req.secret = 'wwu compscie';
+		res.cookie('user', req.user.name, {maxAge: 3600000, secure: false,  signed: true}); 
+		res.cookie('user1', req.user.name, {maxAge: 3600000, secure: false,  signed: false}); 
+		res.redirect('/');
+	}
+});
 
 app.post('/', function(req, res, next) {
 	res.render('index', {message: ''});
