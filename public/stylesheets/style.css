@@ -6,3 +6,31 @@ body {
 a {
   color: #00B7FF;
 }
+
+#select {
+	display: none;
+	position: absolute;
+	background: #bdbdbd;
+	right: 160px;
+	list-style: none;
+	width: 150px;
+	height: 125px;
+	border: black;
+	border-radius: 6px;
+	box-shadow: 0 0 19px 5px rgba(66, 66, 66, 1);
+}
+#select a {
+	color: black;
+}
+
+#profile {
+	width: 500px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	margin-top: 50px;
+}
+#stuff {
+	margin-top: 50px;
+	text-align: center;
+}

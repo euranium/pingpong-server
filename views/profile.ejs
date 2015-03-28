@@ -6,11 +6,21 @@
 -->
 <% include header.ejs %>
 		<!-- Main -->
-			<section id="main" class="container 75%">
+			<section id="stuff" class="container 75%">
 				<header>
 					<h2><%= user %></h2>
-					<p>Wins: <%= win %><br />
-					Losses: <%= loss%></p>
 				</header>
 			</section>
+			<div class='box' id='profile'>
+				<p>Wins: <%= win %><br />
+					Losses: <%= loss %><br />
+					elo: <%= elo %></p>
+				<% for (var i=0; i<row.length; i++) { %>
+					<% if (row[i].sendTo == user ) { %>
+						<p>Game request sent<br />
+						<strong>Winner:</strong> <%= row[i].winner %>
+						<strong>Second Place:</strong> <%= row[i].looser %></p>
+					<% } %>
+				<% } %>
+			</div>
 <% include footer.ejs %>
