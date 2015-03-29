@@ -5,11 +5,41 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <% include header.ejs %>
-		<!-- Main -->
-			<section id="main" class="container 75%">
-				<header>
-					<h2><%= user %></h2>
-					<p>what?!</p>
-				</header>
-			</section>
-<% include footer.ejs %>
+<!-- Main -->
+<section id="main" class="container 75%">
+	<header>
+		<h2>Log your game</h2>
+	</header>
+	<br />
+	<div class='box' id='log'>
+		<form action='/games/log' method='post'>
+			<div class="row uniform 75%">
+				<div class="12u" id=person'>
+					<input type="text" name="sendTo" id="sendTo" value="" required="" placeholder="send request to" />
+					<br />
+				</div>
+				<div class="row uniform 100%" id='entry'>
+					<div class="12u" id='Winner'>
+						<input type="text" name="winner" id="winner" value="" required="" placeholder="winner" />
+					</div>
+					<div class="12u" id='looser'>
+						<input type="text" name="second" id="second" value="" required="" placeholder="second place" />
+					</div>
+				</div>
+				<div class="row uniform" id='enter'>
+					<div class="12u">
+						<ul class="actions align-center" id='Entry'>
+							<li><input id='sumbit' type="submit" value="Send Request" /></li>
+						</ul>
+					</div>
+				</div>
+				<% if (success.length != 0) { %>
+				<p style='color: green'>Your game log request has been sent</p>
+				<% } %>
+				<% if (error.length != 0) { %>
+				<p style='color: red; text-align: center'>*<%= error %></p>
+				<% } %>
+			</form>
+		</div>
+	</section>
+	<% include footer.ejs %>

@@ -9,17 +9,24 @@ a {
 
 #select {
 	display: none;
+	text-align: center;
 	position: absolute;
+	float: bottom;
 	background: #bdbdbd;
-	right: 160px;
+	right: 140px;
 	list-style: none;
-	width: 150px;
-	height: 125px;
+	width: 100%;
+	max-width: 150px;
+	height: 200%;
 	border: black;
 	border-radius: 6px;
 	box-shadow: 0 0 19px 5px rgba(66, 66, 66, 1);
 }
+
 #select a {
+	margin-left: -30px;
+	width: 100%;
+	text-align: center;
 	color: black;
 }
 
@@ -33,4 +40,33 @@ a {
 #stuff {
 	margin-top: 50px;
 	text-align: center;
+}
+
+#log {
+	width: 600px;
+	margin-right: auto;
+	margin-left: auto;
+	background-color: #bdbdbd;
+}
+#Winner {
+	width: 50%;
+	margin-left: -21px;
+}
+#looser {
+	width: 50%;
+}
+#enter, #entry, #Entry {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+#Entry {
+	margin-left: -15px;
+}
+#submit {
+	margin-right: auto;
+	margin-left: auto;
+}
+#error {
+	color: red;
 }

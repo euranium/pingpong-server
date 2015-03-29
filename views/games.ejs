@@ -11,7 +11,31 @@
 					<h2>Find a Game</h2>
 					<p>right here</p>
 					<h2>Log your game</h2>
-					<p>right there</p>
-				</header>
-			</section>
+					<br />
+					<div class='box' id='log'>
+						<form action='/games/log' method='post'>
+							<div class="row uniform 75%">
+								<div class="12u">
+									<input type="text" name="sendTo" id="sendTo" value="" required="" placeholder="send request to" />
+									<br />
+								</div>
+								<div class="row uniform 100%">
+									<div class="6u 12u(mobilep)">
+										<input type="text" name="winner" id="winner" value="" required="" placeholder="winner" />
+									</div>
+									<div class="6u 12u(mobilep)">
+										<input type="text" name="second" id="second" value="" required="" placeholder="second place" />
+									</div>
+								</div>
+								<div class="row uniform" id='submit'>
+									<div class="12u">
+										<ul class="actions align-center">
+											<li><input id='sumbit' type="submit" value="Send Request" /></li>
+										</ul>
+									</div>
+								</div>
+							</form>
+						</div>
+					</header>
+				</section>
 <% include footer.ejs %>

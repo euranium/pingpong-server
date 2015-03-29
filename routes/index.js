@@ -13,6 +13,7 @@ var bcrypt = require('bcrypt-nodejs');
 var cookie = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+
 module.exports = genUuid;
 var genUuid = parse.genUuid;
 app.use(session({
@@ -83,7 +84,6 @@ passport.deserializeUser(function (name, done) {
 				console.log(err);
 				return done(null, false);
 			}
-			console.log(row[0].id);
 			return done(null, row[0].name);
 		});
 	};
@@ -114,7 +114,7 @@ passport.use(new LocalStrategy(
 /* GET home page. */
 app.get('/', function (req, res) {
 	var user = logged(req.cookies.user);
-	console.log('user', user);
+	console.log('user', req.user);
 	res.render('index', {'user': user});
 });
 
@@ -138,7 +138,7 @@ app.get('/games/find', isLoggedIn, function(req, res) {
 });
 app.get('/games/log', isLoggedIn, function(req, res) {
 	var user = logged(req.cookies.user);
-	res.render('addGame', {'user': user});
+	res.render('addGame', {'user': user, error: '', success: ''});
 });
 
 // profile section
@@ -146,7 +146,7 @@ app.get('/profile', isLoggedIn, function(req, res) {
 	var user = logged(req.cookies.user);
 	db = new sqlite3.Database(file);
 	//var query = util.format("Select name, elo, win, loss From people Where name = '%s'", user);
-	var query = util.format("Select name, elo, win, loss, sendTo,  winner, looser from people as p join request as r on p.name = '%s'", user);
+	var query = util.format("Select name, elo, win, loss, sendTo, winner, looser From people Left Join request Where people.name = '%s'", user);
 	db.all(query, function(err, row) {
 		if (err) {
 			console.log('profile error', err);
@@ -169,38 +169,56 @@ app.get('/login', function(req, res) {
 	res.render('login', {error: '', user: logged(req.cookies.user)});
 });
 
-app.post('/login', passport.authenticate('local', {/*successRedirect: '/', */failureRedirect: '/login', failureFlash: false}), function(req, res, next) {
+app.post('/games/log', isLoggedIn, function(req, res) {
+	var sendTo = req.body.sendTo, winner = req.body.winner, looser = req.body.second, user = logged(req.cookies.user);
+	if (sendTo === user)
+		res.render('addGame', {'user': user, error: 'cannot send request to youself', success: ''});
+	else if(winner === looser)
+		res.render('addGame', {'user': user, error: 'winner and looser the same person', success: ''});
+	else if (winner !== user && looser !== user)
+		res.render('addGame', {'user': user, error: 'you must be apart of the game', success: ''});
+	else {
+		db = new sqlite3.Database(file);
+		var query = util.format("Select name From people Where name = '%s' or name = '%s'", winner, looser);
+		console.log(query);
+		db.all(query, function(err, row) {
+			console.log(row);
+			if (row[0] === undefined || row[1] === undefined)
+				res.render('addGame', {'user': user, error: 'user not found', success: ''});
+			else if (err !== null)
+				res.render('addGame', {'user': user, error: 'error sending request', success: ''});
+			else {
+				query = util.format("Insert Into request (sendTo, winner, looser) Values ('%s','%s', '%s')", sendTo, winner, looser);
+				write(query);
+				res.render('addGame', {'user': user, error: '', success: 'success'});
+			}
+		});
+	}
+});
+
+app.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureFlash: false}), function(req, res, next) {
 	if (null === req.user) {
 		res.redirect('/login');
 	}
 	else {
 		req.secret = 'wwu compscie';
-		res.cookie('user', req.user.name, {maxAge: 3600000, secure: false,  signed: true}); 
+		res.cookie('user', req.user.name, {maxAge: 3600000, secure: false,  signed: true});
 		res.redirect('/');
 	}
 });
 
 // user creation
 app.post('/signUp', function(req, res, next) {
-	var pass0, pass1, user, email;
-	pass0 = req.body.password0;
-	pass1 = req.body.password1;
-	user = req.body.name;
-	email = req.body.email;
+	var pass0 = req.body.password0, pass1 = req.body.password1, user = req.body.name, email = req.body.email;
 	email = parse.isEmail(email);
-	if ((pass0 === '') || (pass1 === '') || (pass0 !== pass1)) {
-		res.render('signUp', {error: 'passwords did not match'});
-	}
-	else if (user === '') {
-		res.render('signUp', {error: 'please enter a user name'});
-	}
-	else if (email === false) {
-		res.render('signUp', {error: 'please enter a valid email address'});
-	}
+	user = parse.isUser(user);
+	var check = parse.check(pass0, pass1, user, email);
+	if (check !== true)
+		res.render('signUp', {error: check});
 	else {
 		db = new sqlite3.Database(file);
-		var hash = bcrypt.hashSync(pass0/*, bcrypt.genSaltSunc(8)*/);
-		var query = util.format("Insert Into people (name, email, password) Values ('%s', '%s', '%s')", user, email, hash);
+		var hash = bcrypt.hashSync(pass0);
+		var query = util.format("Insert Into people (name, email, password, elo, win, loss) Values ('%s', '%s', '%s', 0, 0, 0)", user, email, hash);
 		console.log(query);
 		db.run(query, function (err, row) {
 			if (err !== null) {
@@ -208,9 +226,8 @@ app.post('/signUp', function(req, res, next) {
 				res.render('signUp', {'error': 'user name already taken' });
 			} else {
 				req.secret = 'wwu compscie';
-				res.cookie('user', user, {maxAge: 3600000, secure: false,  signed: true}); 
+				res.cookie('user', user, {maxAge: 3600000, secure: false,  signed: true});
 				res.redirect('/');
-				//res.render('index', {message: 'thank you for signing up'});
 			}
 		});
 	}

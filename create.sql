@@ -39,7 +39,8 @@ Create Table if Not Exists games (
 	);
 
 Create Table if Not Exists request (
+	ident Integer Primary Key AUTOINCREMENT,
 	sendTo String,
 	winner String,
-	losser String,
+	looser String
 	);

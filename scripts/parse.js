@@ -11,10 +11,26 @@ exports.remove = function (string) {
 exports.isEmail = function (email) {
 	if (email.length === 0)
 		return false;
-	email = email.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|@|#|$|%|\*|\(|\)|;|\/|"|\?|=]/g, "");
+	if (typeof email !== 'string')
+		return false;
+	email = email.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|#|$|%|\*|\(|\)|;|\/|"|\?|=]/g, "");
 	if (email.indexOf("@") === -1)
 		return false;
 	return email;
+};
+exports.isUser = function (user) {
+	if (typeof user !== 'string' || user.length === 0)
+		return false;
+	return user.replace(/[^A-Za-z-_0-9 |:|,|&|+|!|#|%|\(|\)|;|\/|"|\?|=]/g, "");
+};
+exports.check = function (pass0, pass1, user, email) {
+	if ((pass0 === '') || (pass1 === '') || (pass0 !== pass1))
+		return 'passwords do not match';
+	if (user.length === 0 || user === false)
+		return 'please enter a user name';
+	if (email === false || email.length === 0)
+		return 'please enter a valid user name';
+	return user;
 };
 
 function uuidFromBytes (rnd) {
