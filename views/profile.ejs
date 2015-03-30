@@ -9,8 +9,8 @@
 		<section id="stuff" class="container 75%">
 			<header>
 				<h2><%= user %></h2>
-				<p>Wins: <%= win %> Losses: <%= loss %><br />
-				elo: <%= elo %></p>
+				<p>Wins: <%= row[0].win %> Losses: <%= row[0].loss %><br />
+				elo: <%= row[0].elo %></p>
 			</header>
 		</section>
 		<% for (var i=0; i<row.length; i++) { %>
