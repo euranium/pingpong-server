@@ -1,25 +1,29 @@
 var crypto = require('crypto');
 
 exports.remove = function (string) {
+	// remove any non standard characters
 	return string.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|@|#|$|%|\*|\(|\)|;|\/|"|\?|=]/g, "");
 };
 
 exports.isEmail = function (email) {
-	if (email.length === 0)
+	// make sure its is a viable string
+	if (email.length < 1 || typeof email !== 'string')
 		return false;
-	if (typeof email !== 'string')
-		return false;
-	email = email.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|#|$|%|\*|\(|\)|;|\/|"|\?|=]/g, "");
+	// remove non standard characters
+	email = email.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|@|#|$|%|\*|\(|\)|;|\/|"|\?|=]/g, "");
 	if (email.indexOf("@") === -1)
 		return false;
 	return email;
 };
 exports.isUser = function (user) {
-	if (typeof user !== 'string' || user.length === 0)
+	// check type and length
+	if (typeof user !== 'string' || user.length < 1)
 		return false;
-	return user.replace(/[^A-Za-z-_0-9 |:|,|&|+|!|#|%|\(|\)|;|\/|"|\?|=]/g, "");
+	// return all safe characters
+	return user.replace(/[^A-Za-z-_0-9 |+|!|@|#|%|;|\/|"|\?|=]/g, "");
 };
 exports.check = function (entry, entry1, entry2) {
+	// check in any input is not valid
 	if (entry.length < 1 || entry === false || typeof entry !== 'string')
 		return 'password not valid';
 	if (entry1.length < 1 || entry1 === false || typeof entry1 !== 'string')
@@ -41,10 +45,11 @@ exports.isValid = function (entry, entry0, entry1, entry2) {
 };
 
 exports.toTime = function() {
-	// returns a string fomrated to yyyy_mm_dd_hh_mm_ss
+	// returns a string fomrated as datetime yyyy_mm_dd hh:mm:ss
 	now = new Date();
 	year = "" + now.getFullYear();
 	month = "" + (now.getMonth() + 1);
+	// if any lenth is 1, add a 0, then convert to a string
 	if (month.length == 1)
 		month = "0" + month;
 	day = "" + now.getDate();
@@ -63,11 +68,12 @@ exports.toTime = function() {
 };
 
 function uuidFromBytes (rnd) {
-  rnd[6] = (rnd[6] & 0x0f) | 0x40;
-  rnd[8] = (rnd[8] & 0x3f) | 0x80;
-  rnd = rnd.toString('hex').match(/(.{8})(.{4})(.{4})(.{4})(.{12})/);
-  rnd.shift();
-  return rnd.join('-');
+	// generate a random hex string
+	rnd[6] = (rnd[6] & 0x0f) | 0x40;
+	rnd[8] = (rnd[8] & 0x3f) | 0x80;
+	rnd = rnd.toString('hex').match(/(.{8})(.{4})(.{4})(.{4})(.{12})/);
+	rnd.shift();
+	return rnd.join('-');
 }
 
 exports.genUuid = function (callback) {
