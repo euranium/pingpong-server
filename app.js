@@ -1,7 +1,6 @@
 // set up ====================================================
 var port = 8000;
 var express = require('express');
-var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookie = require('cookie-parser');
@@ -10,7 +9,6 @@ var passport = require('passport');
 var local = require('passport-local');
 var session = require('express-session');
 var sql = require('sqlite3').verbose();
-var flash = require('connect-flash');
 var port = process.env.PORT || 8000;
 var bcrypt = require('bcrypt-nodejs');
 var crypto = require('crypto');
