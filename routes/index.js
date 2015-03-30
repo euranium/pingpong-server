@@ -24,7 +24,7 @@ app.use(session({
 	saveUninitialized: true,
 	cookie: {
 		secure: false,
-		maxAge: 35000000
+		maxAge: 36000000
 	},
 	secret: 'wwu compsci'
 }));

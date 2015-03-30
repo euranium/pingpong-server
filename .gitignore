@@ -5,3 +5,5 @@ example
 oldError
 *.idea
 *.iml
+README.html
+*.Rhistory
