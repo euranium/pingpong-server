@@ -2,7 +2,7 @@ var crypto = require('crypto');
 
 exports.remove = function (string) {
 	// remove any non standard characters
-	return string.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|@|#|$|%|\*|\(|\)|;|\/|"|\?|=]/g, "");
+	return string.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|@|#|$|%|\*|;|\/|\?|=]/g, "");
 };
 
 exports.isEmail = function (email) {
@@ -10,8 +10,11 @@ exports.isEmail = function (email) {
 	if (email.length < 1 || typeof email !== 'string')
 		return false;
 	// remove non standard characters
-	email = email.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|@|#|$|%|\*|\(|\)|;|\/|"|\?|=]/g, "");
-	if (email.indexOf("@") === -1)
+	email = email.replace(/[^A-Za-z-_0-9 |&|+|\.|!|@|#|$|\*|\?|=]/g, "");
+	// make sure there is an "@" and "." and they are in the correct possition
+	if (email.indexOf("@") === -1 || email.indexOf('.') === -1)
+		return false;
+	if (email.indexOf("@") > email.indexOf('.'))
 		return false;
 	return email;
 };
@@ -20,7 +23,7 @@ exports.isUser = function (user) {
 	if (typeof user !== 'string' || user.length < 1)
 		return false;
 	// return all safe characters
-	return user.replace(/[^A-Za-z-_0-9 |+|!|@|#|%|;|\/|"|\?|=]/g, "");
+	return user.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|@|#|$|%|\*|;|\/|\?|=]/g, "");
 };
 exports.check = function (entry, entry1, entry2) {
 	// check in any input is not valid
