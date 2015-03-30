@@ -28,9 +28,9 @@ Create Table If Not Exists google (
 	name String
 	);
 
-Create Table If Not Exists score (
-	player String,
-	win Integer
+Create Table If Not Exists history (
+	win String,
+	loose String
 	);
 
 Create Table if Not Exists games (

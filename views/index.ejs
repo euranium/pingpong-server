@@ -20,7 +20,12 @@
 	</head>
 	<body class='landing'>
 		<!-- Header -->
-			<header id="header" class="alt">
+		<header id="header" class="alt">
+			<% if (user !== false) { %>
+			<ul>
+				<li><a id='logout' class='button' href="/logout">Logout</a></li>
+			</ul>
+			<% } %>
 				<nav id="nav">
 					<ul>
 						<li><a href="/">Home</a></li>
@@ -43,13 +48,13 @@
 						</li>
 						<li><a href="/signUp" class="button">Sign Up</a></li>
 						<% } else { %>
+						<li><a href="/profile"><%= user %></a></li>
 						<li><a href="games" id='games' class="icon fa-angle-down">Games</a></li>
 						<ul id='select'>
 							<li><a href='games/find'>Find a game</a></li>
 							<li><a href='games/log'>Log a game</a></li>
-						</ul> 
-						<li><a href="/profile"><%= user %></a></li>
-						<li><a href="/logout">Logout</a></li>
+						</ul>
+						<li class='small'><a class='small' href="/logout">Logout</a></li>
 						<% } %>
 					</ul>
 				</nav>
@@ -159,4 +164,4 @@
 		<script src="/javascripts/js/init.js"></script>
 		<script src="/javascripts/form.js"></script>
 	</body>
-</html>	
+</html>

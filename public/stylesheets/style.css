@@ -7,13 +7,24 @@ a {
   color: #00B7FF;
 }
 
+#logout {
+	list-style: none none;
+	background-color: #bdbdbd !important;
+}
+@media (min-width: 820px) {
+	.small {
+		display: none !important;
+	}
+}
+ul li{
+	list-style: none;
+}
 #select {
 	display: none;
 	text-align: center;
 	position: absolute;
-	float: bottom;
+	right: 0;
 	background: #bdbdbd;
-	right: 140px;
 	list-style: none;
 	width: 100%;
 	max-width: 150px;
@@ -66,4 +77,20 @@ a {
 #submit {
 	margin-right: auto;
 	margin-left: auto;
+}
+
+#accept {
+	background-color: green;
+}
+#reject {
+	background-color: red;
+}
+#accept, #reject {
+	width: 100px;
+	height: 50px;
+	line-height: 0;
+}
+#history {
+	width: 100%;
+	text-align: center;
 }

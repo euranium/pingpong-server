@@ -145,16 +145,24 @@ app.get('/games/log', isLoggedIn, function(req, res) {
 app.get('/profile', isLoggedIn, function(req, res) {
 	var user = logged(req.cookies.user);
 	db = new sqlite3.Database(file);
-	//var query = util.format("Select name, elo, win, loss From people Where name = '%s'", user);
-	var query = util.format("Select name, elo, win, loss, sendTo, winner, looser From people Left Join request Where people.name = '%s'", user);
+	// left join on people and requests to get people val always
+	// and requests only when there are requests
+	var query = util.format("Select name, elo, win, loss, ident, sendTo, winner, looser From people Left Join request Where people.name = '%s'", user);
 	db.all(query, function(err, row) {
 		if (err) {
 			console.log('profile error', err);
 			res.render('error', {error: err});
 		} else {
-			console.log('row', row);
-			var win = row[0].win, loss = row[0].loss, elo = row[0].elo;
-			res.render('profile', {'user': user, 'win': win, 'loss': loss, 'elo': elo, 'row': row});
+			var win = row[0].win, loss = row[0].loss, elo = row[0].elo, request = row;
+			query = util.format("Select win, loose From history where win='%s' or loose='%s'", user, user);
+			db.all(query, function(err, row) {
+				if (err) {
+					console.log(err);
+					res.render('error', {error: err});
+				} else {
+					res.render('profile', {'user': user, 'win': win, 'loss': loss, 'elo': elo, 'row': request, 'history': row});
+				}
+			});
 		}
 	});
 });
@@ -168,25 +176,60 @@ app.get('/logout', function(req, res) {
 app.get('/login', function(req, res) {
 	res.render('login', {error: '', user: logged(req.cookies.user)});
 });
+app.post('/profile', isLoggedIn, function(req, res) {
+	var accept=req.body.accept, reject = req.body.reject, id = req.body.id, user = logged(req.cookies.user), winSum, lossSum, query;
+	var isValid = parse.isValid(accept, reject);
+	if (reject && reject === 'reject'){
+		query = util.format("Delete From request where ident=%d", id);
+		db = new sqlite3.Database(file);
+		db.run(query);
+		res.redirect('/profile');
+	}
+	else if (accept && accept === 'accept') {
+		var winner = req.body.winner, looser = req.body.looser;
+		query = util.format('Select name, win, loss From people where name="%s" Or name="%s"', winner, looser);
+		console.log(query);
+		db = new sqlite3.Database(file);
+		db.all(query, function(err, row) {
+			if (err || row[0].name === undefined || row[1].name === undefined){
+				console.log(err | 'name undefined');
+				res.render('error', {error: err | 'name undefined'});
+			} else {
+				query = util.format("Update People Set win= win+1 Where name='%s'", winner);
+				db.run(query);
+				query = util.format("Update People Set loss= loss+1 Where name='%s'", looser);
+				db.run(query);
+				query = util.format("Delete From request where ident=%d", id);
+				db.run(query);
+				query = util.format("Insert Into history Values('%s', '%s')", winner, looser);
+				db.run(query);
+				res.redirect('/profile');
+			}
+		});
+	} else
+		res.render('error', {error: 'reject or accept not defined'});
+});
 
 app.post('/games/log', isLoggedIn, function(req, res) {
 	var sendTo = req.body.sendTo, winner = req.body.winner, looser = req.body.second, user = logged(req.cookies.user);
-	if (sendTo === user)
-		res.render('addGame', {'user': user, error: 'cannot send request to youself', success: ''});
-	else if(winner === looser)
-		res.render('addGame', {'user': user, error: 'winner and looser the same person', success: ''});
-	else if (winner !== user && looser !== user)
-		res.render('addGame', {'user': user, error: 'you must be apart of the game', success: ''});
+	// data parsing to check validity
+	var check = parse.check(sendTo, winner, looser);
+	console.log('check', check);
+	var isValid = parse.isValid(sendTo, user, winner, looser);
+	console.log('valid', isValid);
+	if (check !== true)
+		res.render('addGame', {'user': user, success: '', error: 'please correctly enter data in the fields'});
+	else if (isValid !== true)
+		res.render('addGame', {'user': user, error: isValid, success: ''});
 	else {
 		db = new sqlite3.Database(file);
 		var query = util.format("Select name From people Where name = '%s' or name = '%s'", winner, looser);
-		console.log(query);
 		db.all(query, function(err, row) {
 			console.log(row);
-			if (row[0] === undefined || row[1] === undefined)
-				res.render('addGame', {'user': user, error: 'user not found', success: ''});
-			else if (err !== null)
+			if (err !== null)
 				res.render('addGame', {'user': user, error: 'error sending request', success: ''});
+			else if (row[0] === undefined || row[1] === undefined)
+				res.render('addGame', {'user': user, error: 'user not found', success: ''});
 			else {
 				query = util.format("Insert Into request (sendTo, winner, looser) Values ('%s','%s', '%s')", sendTo, winner, looser);
 				write(query);
@@ -212,8 +255,8 @@ app.post('/signUp', function(req, res, next) {
 	var pass0 = req.body.password0, pass1 = req.body.password1, user = req.body.name, email = req.body.email;
 	email = parse.isEmail(email);
 	user = parse.isUser(user);
-	var check = parse.check(pass0, pass1, user, email);
-	if (check !== true)
+	var check = parse.check(pass0, user, email);
+	if (check !== true || pass0 !== pass1)
 		res.render('signUp', {error: check});
 	else {
 		db = new sqlite3.Database(file);

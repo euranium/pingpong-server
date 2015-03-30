@@ -5,22 +5,41 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <% include header.ejs %>
-		<!-- Main -->
-			<section id="stuff" class="container 75%">
-				<header>
-					<h2><%= user %></h2>
-				</header>
-			</section>
-			<div class='box' id='profile'>
-				<p>Wins: <%= win %><br />
-					Losses: <%= loss %><br />
-					elo: <%= elo %></p>
-				<% for (var i=0; i<row.length; i++) { %>
-					<% if (row[i].sendTo == user ) { %>
-						<p>Game request sent<br />
-						<strong>Winner:</strong> <%= row[i].winner %>
-						<strong>Second Place:</strong> <%= row[i].looser %></p>
-					<% } %>
-				<% } %>
-			</div>
+<!-- Main -->
+		<section id="stuff" class="container 75%">
+			<header>
+				<h2><%= user %></h2>
+				<p>Wins: <%= win %> Losses: <%= loss %><br />
+				elo: <%= elo %></p>
+			</header>
+		</section>
+		<% for (var i=0; i<row.length; i++) { %>
+		<% if (row[i].sendTo == user ) { %>
+		<div class='box' id='profile'>
+			<form action='/profile' method='post'>
+				<p>Game request sent<br />
+				<strong>Winner:</strong> <%= row[i].winner %>&#160;&#160;
+				<strong>Second Place:</strong> <%= row[i].looser %></p>
+				<div class='hide' style='display: none'>
+					<input id='winner' type='text' name='winner' value=<%= row[i].winner %>>
+					<input id='looser' type='text' name='looser' value=<%= row[i].looser %>>
+					<input id='id' type='text' name='id' value=<%= row[i].ident%>>
+				</div>
+				<div class="row uniform">
+					<div class="12u">
+						<ul class="actions align-center">
+							<li><input id='accept' type="submit" name='accept' value='accept'  /></li>
+							<li><input id='reject' type="submit" name='reject' value="reject" /></li>
+						</ul>
+					</div>
+				</div>
+			</form>
+		</div>
+		<% } %>
+		<% } %>
+		<div id='history'>
+			<% for (var i=0; i<history.length; i++) { %>
+			<p><strong>Winner:</strong> <%= history[i].win %>&#160;|&#160;<strong> Looser:</strong> <%= history[i].loose %></p>
+			<% } %>
+		</div>
 <% include footer.ejs %>
