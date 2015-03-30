@@ -21,8 +21,6 @@
 				<strong>Winner:</strong> <%= row[i].winner %>&#160;&#160;
 				<strong>Second Place:</strong> <%= row[i].looser %></p>
 				<div class='hide' style='display: none'>
-					<input id='winner' type='text' name='winner' value=<%= row[i].winner %>>
-					<input id='looser' type='text' name='looser' value=<%= row[i].looser %>>
 					<input id='id' type='text' name='id' value=<%= row[i].ident%>>
 				</div>
 				<div class="row uniform">
@@ -39,7 +37,7 @@
 		<% } %>
 		<div id='history'>
 			<% for (var i=0; i<history.length; i++) { %>
-			<p class='log'><strong>Winner:</strong> <%= history[i].win %>&#160;|&#160;<strong> Looser:</strong> <%= history[i].loose %></p>
+			<p class='log'><strong>Winner:</strong> <%= history[i].win %>&#160;|&#160;<strong> Looser:</strong> <%= history[i].loose %>&#160;|&#160;<strong>Date:</strong> <%= history[i].time %></p>
 			<% } %>
 		</div>
 <% include footer.ejs %>

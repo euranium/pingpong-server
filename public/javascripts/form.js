@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	$('#logger').click(function() {
+	$('#logger').mouseover(function() {
 		$('#signIn').toggle();
 	});
 });

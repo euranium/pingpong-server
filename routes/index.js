@@ -55,17 +55,15 @@ function write (data) {
 }
 
 function isLoggedIn (req, res, next) {
-	var user = req.cookies.user;
-	if (!user)
-		return res.redirect('/login');
-	var name = cookie.signedCookie(user, 'wwu compscie');
-	if (name)
+	//var user = req.cookies.user;
+	if (req.isAuthenticated())
 		return next();
-	res.redirect('/');
+	else
+		res.redirect('/');
 }
 function logged (user) {
 	if (user !== undefined)
-		return cookie.signedCookie(user, 'wwu compscie');
+		return user;
 	return false;
 }
 
@@ -75,13 +73,11 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (name, done) {
 	login = function () {
 		db = new sqlite3.Database(file);
-		console.log(name.id);
 		var id = name.id;
-		var query = util.format("Select rowid As id, name, password Where id = '%s'", id);
-		console.log('deserialize', query);
-		db.run(query, function(err, row) {
-			if ((err !== null) || (!row)) {
-				console.log(err);
+		var query = util.format("Select id, name, password from people Where id = %d", id);
+		db.all(query, function(err, row) {
+			if (err) {
+				console.log('deserialize error', err);
 				return done(null, false);
 			}
 			return done(null, row[0].name);
@@ -113,37 +109,37 @@ passport.use(new LocalStrategy(
 // ============================================================================
 /* GET home page. */
 app.get('/', function (req, res) {
-	var user = logged(req.cookies.user);
 	console.log('user', req.user);
-	res.render('index', {'user': user});
+	res.render('index', {'user': logged(req.user)});
 });
 
 app.get('/signUp', function(req, res, next) {
-	res.render('signUp', {error: '', user: logged(req.cookies.user)});
+	res.render('signUp', {error: '', user: logged(req.user)});
 });
 
 app.get('/games', isLoggedIn, function(req, res) {
-	var user = logged(req.cookies.user);
+	var user = req.user;
 	res.render('games', {'user': user});
 });
 app.get('/games/setGame', isLoggedIn, function(req, res) {
-	var user = logged(req.cookies.user);
+	var user = req.user;
 	res.render('setGame', {'user': user});
 });
 app.get('/games/find', isLoggedIn, function(req, res) {
-	var user = logged(req.cookies.user);
+	var user = req.user;
 	var time = parse.toTime();
 	console.log('time', time);
 	res.render('findGame', {'user': user});
 });
 app.get('/games/log', isLoggedIn, function(req, res) {
-	var user = logged(req.cookies.user);
+	var user = req.user;
 	res.render('addGame', {'user': user, error: '', success: ''});
 });
 
 // profile section
 app.get('/profile', isLoggedIn, function(req, res) {
-	var user = logged(req.cookies.user);
+	console.log('profile', req.user);
+	var user = logged(req.user);
 	db = new sqlite3.Database(file);
 	// left join on people and requests to get people val always
 	// and requests only when there are requests
@@ -154,7 +150,7 @@ app.get('/profile', isLoggedIn, function(req, res) {
 			res.render('error', {error: err});
 		} else {
 			var win = row[0].win, loss = row[0].loss, elo = row[0].elo, request = row;
-			query = util.format("Select win, loose From history where win='%s' or loose='%s'", user, user);
+			query = util.format("Select win, loose, time From history where win='%s' or loose='%s'", user, user);
 			db.all(query, function(err, row) {
 				if (err) {
 					console.log(err);
@@ -169,16 +165,15 @@ app.get('/profile', isLoggedIn, function(req, res) {
 
 // logout
 app.get('/logout', function(req, res) {
-	res.clearCookie('user');
+	req.logout();
 	res.redirect('/');
 });
 
 app.get('/login', function(req, res) {
-	res.render('login', {error: '', user: logged(req.cookies.user)});
+	res.render('login', {error: '', user: logged(req.user)});
 });
 app.post('/profile', isLoggedIn, function(req, res) {
-	var accept=req.body.accept, reject = req.body.reject, id = req.body.id, user = logged(req.cookies.user), winSum, lossSum, query;
-	var isValid = parse.isValid(accept, reject);
+	var accept=req.body.accept, reject = req.body.reject, id = req.body.id, user = logged(req.user), query;
 	if (reject && reject === 'reject'){
 		query = util.format("Delete From request where ident=%d", id);
 		db = new sqlite3.Database(file);
@@ -187,21 +182,21 @@ app.post('/profile', isLoggedIn, function(req, res) {
 	}
 	else if (accept && accept === 'accept') {
 		var winner = req.body.winner, looser = req.body.looser;
-		query = util.format('Select name, win, loss From people where name="%s" Or name="%s"', winner, looser);
+		query = util.format('Select winner, looser from request where ident=%d and sendTo="%s"', id, user);
 		console.log(query);
 		db = new sqlite3.Database(file);
 		db.all(query, function(err, row) {
-			if (err || row[0].name === undefined || row[1].name === undefined){
-				console.log(err | 'name undefined');
-				res.render('error', {error: err | 'name undefined'});
+			if (err || row[0].winner === undefined){
+				console.log(err);
+				res.render('error', {error: err});
 			} else {
-				query = util.format("Update People Set win= win+1 Where name='%s'", winner);
+				query = util.format("Update People Set win= win+1 Where name='%s'", row[0].winner);
 				db.run(query);
-				query = util.format("Update People Set loss= loss+1 Where name='%s'", looser);
+				query = util.format("Update People Set loss= loss+1 Where name='%s'", row[0].looser);
 				db.run(query);
 				query = util.format("Delete From request where ident=%d", id);
 				db.run(query);
-				query = util.format("Insert Into history Values('%s', '%s')", winner, looser);
+				query = util.format("Insert Into history  Values('%s', '%s', '%s')", row[0].winner, row[0].looser, parse.toTime());
 				db.run(query);
 				res.redirect('/profile');
 			}
@@ -211,7 +206,7 @@ app.post('/profile', isLoggedIn, function(req, res) {
 });
 
 app.post('/games/log', isLoggedIn, function(req, res) {
-	var sendTo = req.body.sendTo, winner = req.body.winner, looser = req.body.second, user = logged(req.cookies.user);
+	var sendTo = req.body.sendTo, winner = req.body.winner, looser = req.body.second, user = logged(req.user);
 	// data parsing to check validity
 	var check = parse.check(sendTo, winner, looser);
 	console.log('check', check);
@@ -239,16 +234,7 @@ app.post('/games/log', isLoggedIn, function(req, res) {
 	}
 });
 
-app.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureFlash: false}), function(req, res, next) {
-	if (null === req.user) {
-		res.redirect('/login');
-	}
-	else {
-		req.secret = 'wwu compscie';
-		res.cookie('user', req.user.name, {maxAge: 3600000, secure: false,  signed: true});
-		res.redirect('/');
-	}
-});
+app.post('/login', passport.authenticate('local', {successRedirect: '/', failureRedirect: '/login', failureFlash: false}));
 
 // user creation
 app.post('/signUp', function(req, res, next) {
@@ -268,9 +254,7 @@ app.post('/signUp', function(req, res, next) {
 				console.log('error ' + err);
 				res.render('signUp', {'error': 'user name already taken' });
 			} else {
-				req.secret = 'wwu compscie';
-				res.cookie('user', user, {maxAge: 3600000, secure: false,  signed: true});
-				res.redirect('/');
+				res.redirect('/login');
 			}
 		});
 	}

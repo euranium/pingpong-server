@@ -30,7 +30,8 @@ Create Table If Not Exists google (
 
 Create Table If Not Exists history (
 	win String,
-	loose String
+	loose String,
+	time Datetime
 	);
 
 Create Table if Not Exists games (

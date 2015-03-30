@@ -1,6 +1,9 @@
 // set up ====================================================
 var port = 8000;
+var sys = require('sys');
+var exec = require('child_process').exec;
 var express = require('express');
+var path=require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookie = require('cookie-parser');
@@ -28,6 +31,9 @@ var users = require('./routes/users');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// system call to make sure database is set up
+function puts(error, stdout, stderr) { sys.puts(stdout); }
+exec("sqlite3 data.db < create.sql", puts);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
