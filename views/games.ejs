@@ -15,25 +15,25 @@
 					<div class='box' id='log'>
 						<form action='/games/log' method='post'>
 							<div class="row uniform 75%">
-								<div class="12u">
+								<div class="12u" id=person'>
 									<input type="text" name="sendTo" id="sendTo" value="" required="" placeholder="send request to" />
 									<br />
 								</div>
-								<div class="row uniform 100%">
-									<div class="6u 12u(mobilep)">
+								<div class="row uniform 100%" id='entry'>
+									<div class="12u" id='Winner'>
 										<input type="text" name="winner" id="winner" value="" required="" placeholder="winner" />
 									</div>
-									<div class="6u 12u(mobilep)">
+									<div class="12u" id='looser'>
 										<input type="text" name="second" id="second" value="" required="" placeholder="second place" />
 									</div>
 								</div>
-								<div class="row uniform" id='submit'>
+								<div class="row uniform" id='enter'>
 									<div class="12u">
-										<ul class="actions align-center">
+										<ul class="actions align-center" id='Entry'>
 											<li><input id='sumbit' type="submit" value="Send Request" /></li>
 										</ul>
 									</div>
-								</div>
+								</div> 
 							</form>
 						</div>
 					</header>

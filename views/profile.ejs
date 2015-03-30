@@ -39,7 +39,7 @@
 		<% } %>
 		<div id='history'>
 			<% for (var i=0; i<history.length; i++) { %>
-			<p><strong>Winner:</strong> <%= history[i].win %>&#160;|&#160;<strong> Looser:</strong> <%= history[i].loose %></p>
+			<p class='log'><strong>Winner:</strong> <%= history[i].win %>&#160;|&#160;<strong> Looser:</strong> <%= history[i].loose %></p>
 			<% } %>
 		</div>
 <% include footer.ejs %>
