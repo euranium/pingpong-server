@@ -9,8 +9,8 @@ To login remotely make a POST request to /login with req.body.password and req.b
 Passport keeps tracked on users through req.user
 
 ## Users
-Once you are logged in and have a correctly assigned req.user, you can access /profile and /games. Each call to said directory will use passports build in login checker, which checks for req.user.
-If there is no authentic req.user you will be redirected to the login page.
+Once you are logged in and have a correctly assigned req.user, you can access /profile and /games. Each call to said directory will use passports build in login checker, which checks req.user.
+If there is no authentic req.user you will be redirected to the login page. I use req.isAuthenticated with passport.
 Visiting /profile will return the the number of win, looses, player elo (still in process), any match requests and match history.
 
 ## Match Requests
