@@ -23,10 +23,10 @@ Feel free to help out with any of these (pull request anyone?).
 	- [ ] make form for a game
 	- [ ] delete old requests
 	- [ ] page to query requests
-- [] Set up user setting
-	- [] add password reset
-	- [] add email verification
+- [ ] Set up user setting
+	- [ ] add password reset
+	- [ ] add email verification
 - [ ] Remove old users / poeple no longer using system
-- [] Make sure there are no breaking changes with future, updates,  dependency updates
+- [ ] Make sure there are no breaking changes with future, updates,  dependency updates
 - [ ] ???
     - [ ] Profit
