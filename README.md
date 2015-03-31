@@ -20,7 +20,7 @@ Feel free to help out with any of these (pull request anyone?)
 - [ ] Set up ranking system
 	- [ ] set up elo system
 	- [ ] set up relative ranking
-	- [ ] set up lader system
+	- [ ] set up ladder system
 - [ ] Set up game wanted sytem
 	- [ ] make form for a game
 	- [ ] delete old requests
