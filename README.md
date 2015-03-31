@@ -32,3 +32,17 @@ Feel free to help out with any of these (pull request anyone?)
 - [ ] Make sure there are no breaking changes with future, updates,  dependency updates
 - [ ] ???
     - [ ] Profit
+
+## Cloning and Running
+run `git clone https://github.com/euranium/pingpong-server && cd pingpong-server && npm start`
+
+## Authors
+Rainier Harvey
+	contact at rainierharvey@gmail.com
+
+## About
+This project was started for the WWU computer science department. It's pupose is to keep track of students wins and loses at ping pong played in CF 405.
+This is primarily for entertainment puposes.
+
+## licensing
+Read LICENSE
