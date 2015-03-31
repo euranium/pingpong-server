@@ -4,12 +4,14 @@ WWU CS ping pong server
 To start on a local machine, simply run `npm start`, running the start script with `./start` will complete this task. To install all the required packages run `npm install`. 
 
 This server is build with and tested with node version 0.12.0 running express 4.11. The server stores all information on an Sqlite3 database. 
-Any server that this is run on must have Sqlite3 installed seperatly. The server is also build using Ubuntu 14.14. 
+Any server that this is run on must have Sqlite3 installed seperatly. The server is also build using and tested on Ubuntu 14.14 and MacOS 10.10.2
+
+Note: there may be some problem with Sqlite3 when porting between GNU/Linux and MacOS. If There is a problem running the Sqlite3 module, run `npm install sqlite3` to reinstall.
 
 Checkout Router README for more information on how this app handles GET and POST requests.
 
 ## TODO
-Feel free to help out with any of these (pull request anyone?).
+Feel free to help out with any of these (pull request anyone?)
 - [ ] Set up third party user authentication with passport and OpenID
 	- [ ] authentication through google
 	- [ ] authentication through facebook
