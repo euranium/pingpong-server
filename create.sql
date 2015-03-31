@@ -30,7 +30,7 @@ Create Table If Not Exists google (
 
 Create Table If Not Exists history (
 	win String,
-	loose String,
+	lose String,
 	time Datetime
 	);
 
@@ -43,5 +43,5 @@ Create Table if Not Exists request (
 	ident Integer Primary Key AUTOINCREMENT,
 	sendTo String,
 	winner String,
-	looser String
+	loser String
 	);

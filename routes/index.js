@@ -151,7 +151,7 @@ app.get('/profile', isLoggedIn, function(req, res) {
 	var user = logged(req.user);
 	db = new sqlite3.Database(file);
 	// left join on people and requests to get people val always and requests only when there are requests
-	var query = util.format("Select name, elo, win, loss, ident, sendTo, winner, looser From people Left Join request Where people.name = '%s'", user);
+	var query = util.format("Select name, elo, win, loss, ident, sendTo, winner, loser From people Left Join request Where people.name = '%s'", user);
 	db.all(query, function(err, row) {
 		if (err) {
 			// if there is an error from the db
@@ -206,7 +206,7 @@ app.post('/profile', isLoggedIn, function(req, res) {
 	else if (accept && accept === 'accept') {
 		// find the match in the db from the provided id and the username
 		// I didn't want to trust the user and just use hiden input to get the match info
-		query = util.format('Select winner, looser from request where ident=%d and sendTo="%s"', id, user);
+		query = util.format('Select winner, loser from request where ident=%d and sendTo="%s"', id, user);
 		db = new sqlite3.Database(file);
 		db.all(query, function(err, row) {
 			if (err || row[0].winner === undefined){
@@ -219,11 +219,11 @@ app.post('/profile', isLoggedIn, function(req, res) {
 				// use non blocking io to have all the updates run async
 				query = util.format("Update People Set win= win+1 Where name='%s'", row[0].winner);
 				db.run(query);
-				query = util.format("Update People Set loss= loss+1 Where name='%s'", row[0].looser);
+				query = util.format("Update People Set loss= loss+1 Where name='%s'", row[0].loser);
 				db.run(query);
 				query = util.format("Delete From request where ident=%d", id);
 				db.run(query);
-				query = util.format("Insert Into history  Values('%s', '%s', '%s')", row[0].winner, row[0].looser, parse.toTime());
+				query = util.format("Insert Into history  Values('%s', '%s', '%s')", row[0].winner, row[0].loser, parse.toTime());
 				db.run(query);
 				// redirect to the profile page again to have that handle user profile info
 				res.redirect('/profile');
@@ -236,10 +236,10 @@ app.post('/profile', isLoggedIn, function(req, res) {
 
 // handle user game request forms
 app.post('/games/log', isLoggedIn, function(req, res) {
-	var sendTo = req.body.sendTo, winner = req.body.winner, looser = req.body.second, user = logged(req.user);
+	var sendTo = req.body.sendTo, winner = req.body.winner, loser = req.body.second, user = logged(req.user);
 	// data parsing to check validity, eg not sending request to ones self
-	var check = parse.check(sendTo, winner, looser);
-	var isValid = parse.isValid(sendTo, user, winner, looser);
+	var check = parse.check(sendTo, winner, loser);
+	var isValid = parse.isValid(sendTo, user, winner, loser);
 	// if any data is not valid
 	if (check !== true)
 		res.render('addGame', {'user': user, success: '', error: 'please correctly enter data in the fields'});
@@ -248,7 +248,7 @@ app.post('/games/log', isLoggedIn, function(req, res) {
 	else {
 		db = new sqlite3.Database(file);
 		// query to make sure the users are real and in the system
-		var query = util.format("Select name From people Where name = '%s' or name = '%s'", winner, looser);
+		var query = util.format("Select name From people Where name = '%s' or name = '%s'", winner, loser);
 		db.all(query, function(err, row) {
 			console.log(row);
 			if (err !== null)
@@ -259,7 +259,7 @@ app.post('/games/log', isLoggedIn, function(req, res) {
 				res.render('addGame', {'user': user, error: 'user not found', success: ''});
 			else {
 				// write the the db with the new request
-				query = util.format("Insert Into request (sendTo, winner, looser) Values ('%s','%s', '%s')", sendTo, winner, looser);
+				query = util.format("Insert Into request (sendTo, winner, loser) Values ('%s','%s', '%s')", sendTo, winner, loser);
 				write(query);
 				res.render('addGame', {'user': user, error: '', success: 'success'});
 			}
