@@ -9,6 +9,7 @@ var session = require('express-session');
 var bcrypt = require('bcrypt-nodejs');
 var cookie = require('cookie-parser');
 var bodyParser = require('body-parser');
+var sqlite3 = require('sqlite3').verbose();
 
 var util = require('util');
 var crypto = require('crypto');
@@ -42,7 +43,6 @@ app.use(passport.session());
 // db set up
 // file location of the db and app to run it
 var file = './data.db';
-var sqlite3 = require('sqlite3').verbose();
 var db;
 // ============================================================
 
@@ -70,7 +70,7 @@ function logged (user) {
 	return parse.isUser(user || false);
 }
 
-/* 
+/*
  * CHECK OUT PASSPORT DOCUMENTATION IF YOU HAVE ANY QUESTIONS ON WHAT IS HAPPENING WITH SERIALIZATION AND STRATEGY
  * http://passportjs.org/
  * standard passport user serialization
@@ -168,7 +168,7 @@ app.get('/profile', isLoggedIn, function(req, res) {
 			var request = row;
 			// make another query to history to get the user's match history
 			// This could be joined with the previous query but I didn't want to add excess joins and complicate the query
-			query = util.format("Select win, loose, time From history where win='%s' or loose='%s'", user, user);
+			query = util.format("Select win, lose, time From history where win='%s' or lose='%s'", user, user);
 			db.all(query, function(err, row) {
 				if (err) {
 					res.render('error', {error: err});
@@ -177,6 +177,7 @@ app.get('/profile', isLoggedIn, function(req, res) {
 				} else {
 					// return the profile page with all the user data and history
 					// the page is rendered with a form to accept or reject any match requests
+					console.log(user);
 					res.render('profile', {'user': user, 'row': request, 'history': row});
 					db.close();
 				}
@@ -262,7 +263,7 @@ app.post('/games/log', isLoggedIn, function(req, res) {
 				res.render('addGame', {'user': user, error: 'error sending request', success: ''});
 				return consolel.log('error', err);
 			}
-			else if (row[0] === undefined || row[1] === undefined)
+			else if (!row[0] || !row[1])
 				// render the page if there was a problem finding any of the users
 				res.render('addGame', {'user': user, error: 'user not found', success: ''});
 			else {

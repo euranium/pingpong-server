@@ -20,7 +20,7 @@ exports.isEmail = function (email) {
 };
 exports.isUser = function (user) {
 	// check type and length
-	if (typeof user !== 'string' || user.length < 1)
+	if (typeof user !== 'string' || user.length < 1 || user === false)
 		return false;
 	// return all safe characters
 	return user.replace(/[^A-Za-z-_0-9 |\ |:|,|&|+|\.|!|@|#|$|%|\*|;|\/|\?|=]/g, "");
