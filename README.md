@@ -12,7 +12,7 @@ Checkout Router README for more information on how this app handles GET and POST
 
 ## TODO
 Feel free to help out with any of these (pull request anyone?)
-- [ ] Set up third party user authentication with passport and OpenID
+- [ ] Set up third party user authentication with passport and OAuth
 	- [ ] authentication through google
 	- [ ] authentication through facebook
 	- [ ] authentication through github
