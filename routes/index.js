@@ -1,8 +1,5 @@
 /*jshint esnext: true */
 // set up ======================================================
-var util = require('util');
-var crypto = require('crypto');
-var parse = require('./../scripts/parse.js');
 var express = require('express');
 var app = express();
 //var router = express.Router();
@@ -13,7 +10,13 @@ var bcrypt = require('bcrypt-nodejs');
 var cookie = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var util = require('util');
+var crypto = require('crypto');
+
+var parse = require('./../scripts/parse.js');
+
 // set up express session with a random id generator which is defined in an external js script
+
 var genUuid = parse.genUuid;
 module.exports = genUuid;
 app.use(session({
@@ -60,24 +63,26 @@ function write (data) {
 function isLoggedIn (req, res, next) {
 	if (req.isAuthenticated())
 		return next();
-	else
-		res.redirect('/');
+	return res.redirect('/');
 }
 function logged (user) {
-	if (user !== undefined)
-		// if user is defined parse it and return the parsed string
-		return parse.isUser(user);
-	return false;
+	// parse the user, if it is undefined it will return false
+	return parse.isUser(user || false);
 }
 
-// CHECK OUT PASSPORT DOCUMENTATION IF YOU HAVE ANY QUESTIONS ON WHAT IS HAPPENING WITH SERIALIZATION AND STRATEGY
-// http://passportjs.org/
-// standard passport user serialization
+/* 
+ * CHECK OUT PASSPORT DOCUMENTATION IF YOU HAVE ANY QUESTIONS ON WHAT IS HAPPENING WITH SERIALIZATION AND STRATEGY
+ * http://passportjs.org/
+ * standard passport user serialization
+ */
 passport.serializeUser(function (user, done) {
+    // make sure done is a function
+    done = (typeof done === 'function') ? done : function() {};
 	return done(null, user);
 });
 // standard passport deseriazation
 passport.deserializeUser(function (name, done) {
+    done = (typeof done === 'function') ? done : function() {};
 	login = function () {
 		db = new sqlite3.Database(file);
 		var query = util.format("Select id, name, password from people Where id = %d", name.id);
@@ -102,7 +107,7 @@ passport.use(new LocalStrategy(
 				var query = util.format("Select id, name, password From people Where name = '%s'", username);
 				// query the db for a person with their id number
 				db.all(query, function(err, row) {
-					if ((err !== null) || (row[0] === undefined)) {
+					if (err || row[0] === undefined) {
 						console.log('login err', err);
 						return done(null, false);
 					}
@@ -157,6 +162,7 @@ app.get('/profile', isLoggedIn, function(req, res) {
 			// if there is an error from the db
 			console.log('profile error', err);
 			res.render('error', {error: err});
+			return console.log(err);
 		} else {
 			// save the results from this query
 			var request = row;
@@ -165,9 +171,9 @@ app.get('/profile', isLoggedIn, function(req, res) {
 			query = util.format("Select win, loose, time From history where win='%s' or loose='%s'", user, user);
 			db.all(query, function(err, row) {
 				if (err) {
-					console.log(err);
 					res.render('error', {error: err});
 					db.close();
+					return console.log(err);
 				} else {
 					// return the profile page with all the user data and history
 					// the page is rendered with a form to accept or reject any match requests
@@ -209,11 +215,11 @@ app.post('/profile', isLoggedIn, function(req, res) {
 		query = util.format('Select winner, loser from request where ident=%d and sendTo="%s"', id, user);
 		db = new sqlite3.Database(file);
 		db.all(query, function(err, row) {
-			if (err || row[0].winner === undefined){
+			if (err || !row[0].winner){
 				// if there is an error, bc the use tried to cheat the system or bc of the db, give them an error page
-				console.log(err);
-				res.render('error', {error: err});
+				res.render('error', {error: err || 'user undefined'});
 				db.close();
+				return console.log(err);
 			} else {
 				// update the db with new win, loss values and match history
 				// use non blocking io to have all the updates run async
@@ -251,9 +257,11 @@ app.post('/games/log', isLoggedIn, function(req, res) {
 		var query = util.format("Select name From people Where name = '%s' or name = '%s'", winner, loser);
 		db.all(query, function(err, row) {
 			console.log(row);
-			if (err !== null)
+			if (err){
 				// render the page again with an  error is there was a problem with the db
 				res.render('addGame', {'user': user, error: 'error sending request', success: ''});
+				return consolel.log('error', err);
+			}
 			else if (row[0] === undefined || row[1] === undefined)
 				// render the page if there was a problem finding any of the users
 				res.render('addGame', {'user': user, error: 'user not found', success: ''});
@@ -289,11 +297,11 @@ app.post('/signUp', function(req, res, next) {
 		var query = util.format("Insert Into people (name, email, password, elo, win, loss) Values ('%s', '%s', '%s', 0, 0, 0)", user, email, hash);
 		// not using the standard write() function to be able to know is something when wrong
 		db.run(query, function (err, row) {
-			if (err !== null) {
+			if (err) {
 				// through a standard error and tell the user the user name is already taken
 				// this is most likey the problem, not the db
-				console.log('error ', err);
 				res.render('signUp', {'error': 'user name already taken' });
+				return console.log('error ', err);
 			} else {
 				// TODO: log the user in after their account is created
 				res.redirect('/login');
