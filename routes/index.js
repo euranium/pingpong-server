@@ -44,6 +44,7 @@ app.use(passport.session());
 // file location of the db and app to run it
 var file = './data.db';
 var db;
+var production = true;
 // ============================================================
 
 function close () {

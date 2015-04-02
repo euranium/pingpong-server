@@ -1,5 +1,5 @@
 // set up ====================================================
-var port = 8000;
+var port = 8080;
 var sys = require('sys');
 var exec = require('child_process').exec;
 var express = require('express');
