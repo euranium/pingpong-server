@@ -200,7 +200,7 @@ app.get('/login', function(req, res) {
 
 // profile page after accepting or rejecting a game request
 app.post('/profile', isLoggedIn, function(req, res) {
-	var accept=req.body.accept, reject = req.body.reject, id = req.body.id, user = logged(req.user), query;
+	var accept=req.body.accept, reject = req.body.reject, id = req.body.id, user = logged(req.user), query, player=req.body.player;
 	// if the player clicked reject delete the request from the db, use the id provided by the form to find the correct request
 	// make sure the value of reject and accept are actually strings they were originaly in the form
 	if (reject && reject === 'reject'){
@@ -213,20 +213,40 @@ app.post('/profile', isLoggedIn, function(req, res) {
 	else if (accept && accept === 'accept') {
 		// find the match in the db from the provided id and the username
 		// I didn't want to trust the user and just use hiden input to get the match info
-		query = util.format('Select winner, loser from request where ident=%d and sendTo="%s"', id, user);
+		query = util.format('Select winner, loser, elo, name from request left join people where ident=%d and sendTo="%s" and (name="%s" or name="%s")', id, user, user, player);
 		db = new sqlite3.Database(file);
 		db.all(query, function(err, row) {
-			if (err || !row[0].winner){
+			if (err || !row[0].winner || !row[1].winner){
 				// if there is an error, bc the use tried to cheat the system or bc of the db, give them an error page
 				res.render('error', {error: err || 'user undefined'});
 				db.close();
 				return console.log(err);
 			} else {
+				// set win and lose objects for the players and determine the player elo difference
+				var win = {}, lose = {}, dif = Math.abs(parseInt(row[0].elo, 10) - parseInt(row[1].elo, 10));
+				win.name = row[0].winner;
+				lose.name = row[0].loser;
+				// if the winner if the first player the query returns
+				if (win.name === row[0].name) {
+					win.pre = row[0].elo;
+					lose.pre = row[1].elo;
+				} else {
+					win.pre = row[1].elo;
+					lose.pre = row[0].elo;
+				}
+				// get the expected score
+				win.ex = parse.expectedScore(win.pre, lose.pre);
+				lose.ex = parse.expectedScore(lose.pre, win.pre);
+				// set the new elo
+				win.score = win.pre + 32 * (1 - win.ex);
+				lost.score = lose.pre + 32 * (0 - lose.ex);
+				console.log('new elo winner', win.name, win.score);
+				console.log('new elo loser', lose.name, lose.score);
 				// update the db with new win, loss values and match history
 				// use non blocking io to have all the updates run async
-				query = util.format("Update People Set win= win+1 Where name='%s'", row[0].winner);
+				query = util.format("Update People Set win= win+1, elo=%d Where name='%s'", win.score, row[0].winner);
 				db.run(query);
-				query = util.format("Update People Set loss= loss+1 Where name='%s'", row[0].loser);
+				query = util.format("Update People Set loss= loss+1 Where name='%s'", lose.score, row[0].loser);
 				db.run(query);
 				query = util.format("Delete From request where ident=%d", id);
 				db.run(query);
