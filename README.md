@@ -18,7 +18,7 @@ Feel free to help out with any of these (pull request anyone?)
 	- [ ] authentication through github
 	- [ ] authentication through twitter
 - [ ] Set up ranking system
-	- [ ] set up elo system
+	- [x] set up elo system
 	- [ ] set up relative ranking
 	- [ ] set up ladder system
 - [ ] Set up game wanted sytem
