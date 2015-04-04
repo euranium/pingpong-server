@@ -22,6 +22,11 @@
 				<strong>Second Place:</strong> <%= row[i].looser %></p>
 				<div class='hide' style='display: none'>
 					<input id='id' type='text' name='id' value=<%= row[i].ident%>>
+					<% if (row[i].winner !== user) {%>
+					<input id='player' type='text' name='player' value= <%= row[i].winner %>>
+					<% } else { %>
+					<input id='player' type='text' name='player' value= <%= row[i].loser %>>
+					<% } %>
 				</div>
 				<div class="row uniform">
 					<div class="12u">
