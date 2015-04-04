@@ -295,7 +295,7 @@ app.post('/signUp', function(req, res, next) {
 		// hash the user's password with standard bcrypt hashSync
 		var hash = bcrypt.hashSync(pass0);
 		// make a new column in the db with all their basic info
-		var query = util.format("Insert Into people (name, email, password, elo, win, loss) Values ('%s', '%s', '%s', 0, 0, 0)", user, email, hash);
+		var query = util.format("Insert Into people (name, email, password, elo, win, loss) Values ('%s', '%s', '%s', 1000, 0, 0)", user, email, hash);
 		// not using the standard write() function to be able to know is something when wrong
 		db.run(query, function (err, row) {
 			if (err) {
