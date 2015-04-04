@@ -47,10 +47,6 @@ exports.isValid = function (entry, entry0, entry1, entry2) {
 	return true;
 };
 
-exports.expectedScore = function (pre, enemy) {
-	return 1 / (1 + Math.pow(10, ((pre - enemy) / 400)));
-};
-
 exports.toTime = function() {
 	// returns a string fomrated as datetime yyyy_mm_dd hh:mm:ss
 	now = new Date();

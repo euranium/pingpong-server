@@ -52,6 +52,7 @@ function close () {
 // write to the db
 function enter (data) {
 	// run an insertion query with a call back to close the connection
+	console.log('data', data);
 	db.run(data, close);
 }
 //open a connection to the db
@@ -166,6 +167,7 @@ app.get('/profile', isLoggedIn, function(req, res) {
 		} else {
 			// save the results from this query
 			var request = row;
+			request[0].elo = Math.round(request[0].elo);
 			// make another query to history to get the user's match history
 			// This could be joined with the previous query but I didn't want to add excess joins and complicate the query
 			query = util.format("Select win, lose, time From history where win='%s' or lose='%s'", user, user);
@@ -214,6 +216,7 @@ app.post('/profile', isLoggedIn, function(req, res) {
 		// find the match in the db from the provided id and the username
 		// I didn't want to trust the user and just use hiden input to get the match info
 		query = util.format('Select winner, loser, elo, name from request left join people where ident=%d and sendTo="%s" and (name="%s" or name="%s")', id, user, user, player);
+		console.log('query', query);
 		db = new sqlite3.Database(file);
 		db.all(query, function(err, row) {
 			if (err || !row[0].winner || !row[1].winner){
@@ -227,7 +230,7 @@ app.post('/profile', isLoggedIn, function(req, res) {
 				win.name = row[0].winner;
 				lose.name = row[0].loser;
 				// if the winner if the first player the query returns
-				if (win.name === row[0].name) {
+				if (row[0].winner === row[0].name) {
 					win.pre = row[0].elo;
 					lose.pre = row[1].elo;
 				} else {
@@ -235,18 +238,18 @@ app.post('/profile', isLoggedIn, function(req, res) {
 					lose.pre = row[0].elo;
 				}
 				// get the expected score
-				win.ex = parse.expectedScore(win.pre, lose.pre);
-				lose.ex = parse.expectedScore(lose.pre, win.pre);
+				win.ex = 1 / (Math.pow(10, (parseInt(lose.pre, 10) - parseInt(win.pre, 10)) / 400) +1);
+				lose.ex = 1 / (Math.pow(10, (parseInt(win.pre, 10) - parseInt(lose.pre, 10)) / 400) +1);
 				// set the new elo
 				win.score = win.pre + 32 * (1 - win.ex);
-				lost.score = lose.pre + 32 * (0 - lose.ex);
+				lose.score = lose.pre + 32 * (0 - lose.ex);
 				console.log('new elo winner', win.name, win.score);
 				console.log('new elo loser', lose.name, lose.score);
 				// update the db with new win, loss values and match history
 				// use non blocking io to have all the updates run async
-				query = util.format("Update People Set win= win+1, elo=%d Where name='%s'", win.score, row[0].winner);
+				query = util.format("Update People Set win = win+1, elo=%d Where name='%s'", win.score, row[0].winner);
 				db.run(query);
-				query = util.format("Update People Set loss= loss+1 Where name='%s'", lose.score, row[0].loser);
+				query = util.format("Update People Set loss = loss+1, elo=%d Where name='%s'", lose.score, row[0].loser);
 				db.run(query);
 				query = util.format("Delete From request where ident=%d", id);
 				db.run(query);
@@ -315,7 +318,7 @@ app.post('/signUp', function(req, res, next) {
 		// hash the user's password with standard bcrypt hashSync
 		var hash = bcrypt.hashSync(pass0);
 		// make a new column in the db with all their basic info
-		var query = util.format("Insert Into people (name, email, password, elo, win, loss) Values ('%s', '%s', '%s', 0, 0, 0)", user, email, hash);
+		var query = util.format("Insert Into people (name, email, password, elo, win, loss) Values ('%s', '%s', '%s', 1000, 0, 0)", user, email, hash);
 		// not using the standard write() function to be able to know is something when wrong
 		db.run(query, function (err, row) {
 			if (err) {
