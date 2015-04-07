@@ -324,7 +324,7 @@ app.post('/signUp', function(req, res, next) {
 			if (err) {
 				// through a standard error and tell the user the user name is already taken
 				// this is most likey the problem, not the db
-				res.render('signUp', {'error': 'user name already taken' });
+				res.render('signUp', {'error': 'user name or email already taken', 'user': false });
 				return console.log('error ', err);
 			} else {
 				// TODO: log the user in after their account is created
