@@ -5,46 +5,46 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <% include header.ejs %>
-		<!-- Main -->
-		<section id="main" class="container 75%">
-			<header>
-				<h2>Sign Up</h2>
-				<p>Sign up to keep track of your ping pong skill</p>
-			</header>
-			<% if (error.length > 0) { %>
-			<div class='alert alert-danger'><%= error %></div>
-			<% } %>
-			<div class="box" id="signUp">
-				<form method="post" action="/signUp">
-					<div class="row uniform 50%">
-						<div class="6u 12u(mobilep)">
-							<h4>User Name</h4>
-							<input type="text" name="name" id="name" value="" required="" placeholder="Jon" />
-						</div>
-						<div class="6u 12u(mobilep)">
-							<h4>Email</h4>
-							<input type="text" name="email" id="email" value="" required="" placeholder="Snow@thrones.com" />
-						</div>
-					</div>
-					<div class="row uniform 50%">
-						<div class="12u">
-							<h4>Password</h4>
-							<input type="password" name="password0" id="password0" value="" required="" placeholder="password" />
-							<br />
-							<h4>Password Again</h4>
-							<input type="password" name="password1" id="password1" value="" required="" placeholder="password" />
-							<br />
-							<p id='message'></p>
-						</div>
-					</div>
-					<div class="row uniform">
-						<div class="12u">
-							<ul class="actions align-center">
-								<li><input id='sumbit' type="submit" value="Create Account" /></li>
-							</ul>
-						</div>
-					</div>
-				</form>
+<!-- Main -->
+<section id="main" class="container 75%">
+	<header>
+		<h2>Sign Up</h2>
+		<p>Sign up to keep track of your ping pong skill</p>
+	</header>
+	<% if (error.length > 0) { %>
+	<div class='alert alert-danger'><%= error %></div>
+	<% } %>
+	<div class="box" id="signUp">
+		<form method="post" action="/signUp">
+			<div class="row uniform 50%">
+				<div class="6u 12u(mobilep)">
+					<h4>User Name</h4>
+					<input type="text" name="name" id="name" value="" required="" placeholder="Jon" />
+				</div>
+				<div class="6u 12u(mobilep)">
+					<h4>Email</h4>
+					<input type="text" name="email" id="email" value="" required="" placeholder="Snow@thrones.com" />
+				</div>
 			</div>
-		</section>
+			<div class="row uniform 50%">
+				<div class="12u">
+					<h4>Password</h4>
+					<input type="password" name="password0" id="password0" value="" required="" placeholder="password" />
+					<br />
+					<h4>Password Again</h4>
+					<input type="password" name="password1" id="password1" value="" required="" placeholder="password" />
+					<br />
+					<p id='message'></p>
+				</div>
+			</div>
+			<div class="row uniform">
+				<div class="12u">
+					<ul class="actions align-center">
+						<li><input id='sumbit' type="submit" value="Create Account" /></li>
+					</ul>
+				</div>
+			</div>
+		</form>
+	</div>
+</section>
 <% include footer.ejs %>

@@ -9,8 +9,8 @@
 		<section id="stuff" class="container 75%">
 			<header>
 				<h2><%= user %></h2>
-				<p>Wins: <%= row[0].win %> Losses: <%= row[0].loss %><br />
-				elo: <%= row[0].elo %></p>
+				<h3>Wins: <%= row[0].win %> Losses: <%= row[0].loss %><br />
+				elo: <%= row[0].elo %></h3>
 			</header>
 		</section>
 		<% for (var i=0; i<row.length; i++) { %>
@@ -19,7 +19,7 @@
 			<form action='/profile' method='post'>
 				<p>Game request sent<br />
 				<strong>Winner:</strong> <%= row[i].winner %>&#160;&#160;
-				<strong>Second Place:</strong> <%= row[i].looser %></p>
+				<strong>Second Place:</strong> <%= row[i].loser %></p>
 				<div class='hide' style='display: none'>
 					<input id='id' type='text' name='id' value=<%= row[i].ident%>>
 					<% if (row[i].winner !== user) {%>
