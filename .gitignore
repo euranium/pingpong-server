@@ -8,3 +8,4 @@ oldError
 README.html
 *.Rhistory
 test.js
+node_sqlite3.*

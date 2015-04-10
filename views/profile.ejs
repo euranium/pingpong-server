@@ -9,8 +9,8 @@
 		<section id="stuff" class="container 75%">
 			<header>
 				<h2><%= user %></h2>
-				<p>Wins: <%= row[0].win %> Losses: <%= row[0].loss %><br />
-				elo: <%= row[0].elo %></p>
+				<h3>Wins: <%= row[0].win %> Losses: <%= row[0].loss %><br />
+				elo: <%= row[0].elo %></h3>
 			</header>
 		</section>
 		<% for (var i=0; i<row.length; i++) { %>
@@ -19,13 +19,18 @@
 			<form action='/profile' method='post'>
 				<p>Game request sent<br />
 				<strong>Winner:</strong> <%= row[i].winner %>&#160;&#160;
-				<strong>Second Place:</strong> <%= row[i].looser %></p>
+				<strong>Second Place:</strong> <%= row[i].loser %></p>
 				<div class='hide' style='display: none'>
 					<input id='id' type='text' name='id' value=<%= row[i].ident%>>
+					<% if (row[i].winner !== user) {%>
+					<input id='player' type='text' name='player' value= <%= row[i].winner %>>
+					<% } else { %>
+					<input id='player' type='text' name='player' value= <%= row[i].loser %>>
+					<% } %>
 				</div>
 				<div class="row uniform">
 					<div class="12u">
-						<ul class="actions align-center">
+						<ul class="actions align-center" id='sub'>
 							<li><input id='accept' type="submit" name='accept' value='accept'  /></li>
 							<li><input id='reject' type="submit" name='reject' value="reject" /></li>
 						</ul>

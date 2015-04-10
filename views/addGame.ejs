@@ -11,18 +11,21 @@
 		<h2>Log your game</h2>
 	</header>
 	<br />
-	<div class='box' id='log'>
+	<div class='box' id='signUp'>
 		<form action='/games/log' method='post'>
 			<div class="row uniform 75%">
-				<div class="12u" id=person'>
+				<div class="12u" >
+					<h4>Send To</h4>
 					<input type="text" name="sendTo" id="sendTo" value="" required="" placeholder="send request to" />
-					<br />
 				</div>
-				<div class="row uniform 100%" id='entry'>
-					<div class="12u" id='Winner'>
+			</div>
+				<div class="row uniform 50%" >
+					<div class="6u 12u(mobilep)">
+						<h4>Winner</h4>
 						<input type="text" name="winner" id="winner" value="" required="" placeholder="winner" />
 					</div>
-					<div class="12u" id='loser'>
+					<div class="6u 12u(mobilep)">
+						<h4>Second Place</h4>
 						<input type="text" name="second" id="second" value="" required="" placeholder="second place" />
 					</div>
 				</div>

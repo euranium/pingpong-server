@@ -37,7 +37,7 @@ function puts(error, stdout, stderr) { sys.puts(stdout); }
 exec("sqlite3 data.db < create.sql", puts);
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 
 app.use('/', routes);
 app.use('/scores', score);

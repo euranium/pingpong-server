@@ -23,7 +23,9 @@
 		<!-- Header -->
 		<header id="header" class="skel-layers-fixed">
 			<% if (user !== false) { %>
-			<li><a id='logout' class='button' href="/logout">Logout</a></li>
+			<ul>
+				<li><a id='logout' class='button' href="/logout">Logout</a></li>
+			</ul>
 				<% } %>
 				<nav id="nav">
 					<ul>
@@ -53,8 +55,8 @@
 							<li><a href='/games/find'>Find a game</a></li>
 							<li><a href='/games/log'>Log a game</a></li>
 						</ul>
-						<% } %>
 						<li><a class='small' href="/logout">Logout</a></li>
+						<% } %>
 					</ul>
 				</nav>
 			</header>
