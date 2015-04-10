@@ -26,6 +26,7 @@ app.use(cookie());
 app.use(express.static(path.join(__dirname, 'public')));
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var score = require('./routes/score');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,7 +40,7 @@ exec("sqlite3 data.db < create.sql", puts);
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 
 app.use('/', routes);
-app.use('/users', users);
+app.use('/scores', score);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
