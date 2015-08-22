@@ -9,38 +9,42 @@ var logger = require('morgan');
 var cookie = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
+var GoogleStrategy = require('passport-google').Strategy;
 var local = require('passport-local');
 var session = require('express-session');
 var sql = require('sqlite3').verbose();
 var port = process.env.PORT || 8000;
 var bcrypt = require('bcrypt-nodejs');
 var crypto = require('crypto');
-
-// ==========================================================
 var app = express();
+// ==========================================================
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookie());
 app.use(express.static(path.join(__dirname, 'public')));
-var routes = require('./routes/index');
+var index = require('./routes/index');
 var users = require('./routes/users');
-var score = require('./routes/score');
+var login = require('./routes/login');
+var games = require('./routes/games');
+var profile = require('./routes/profile');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// system call to make sure database is set up
-function puts(error, stdout, stderr) { sys.puts(stdout); }
-exec("sqlite3 data.db < create.sql", puts);
+// system call to make sure database exists and is set up
+//function puts(error, stdout, stderr) { sys.puts(stdout); }
+//exec("sqlite3 data.db < ./scripts/create.sql", puts);
 
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
-app.use('/', routes);
-app.use('/scores', score);
+app.use('/', index);
+app.use('/account', login);
+app.use('/games', games);
+app.use('/profile', profile);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

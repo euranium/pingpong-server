@@ -9,3 +9,4 @@ README.html
 *.Rhistory
 test.js
 node_sqlite3.*
+node_modules/

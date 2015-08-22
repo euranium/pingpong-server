@@ -24,7 +24,7 @@
 		<header id="header" class="skel-layers-fixed">
 			<% if (user !== false) { %>
 			<ul>
-				<li><a id='logout' class='button' href="/logout">Logout</a></li>
+				<li><a id='logout' class='button' href="/account/logout">Logout</a></li>
 			</ul>
 				<% } %>
 				<nav id="nav">
@@ -47,7 +47,7 @@
 							</li>
 						</ul>
 						</li>
-						<li><a href="/signUp" class="button">Sign Up</a></li>
+						<li><a href="/account/signUp" class="button">Sign Up</a></li>
 						<% } else { %>
 						<li><a href="/profile"><%= user %></a></li>
 						<li><a href="games" id='games' class="icon fa-angle-down">Games</a></li>
