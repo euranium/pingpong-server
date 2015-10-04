@@ -23,7 +23,7 @@
 		<header id="header" class="alt">
 			<% if (user !== false) { %>
 			<ul>
-				<li><a id='logout' class='button' href="/logout">Logout</a></li>
+				<li><a id='logout' class='button' href="/account/logout">Logout</a></li>
 			</ul>
 			<% } %>
 				<nav id="nav">
@@ -31,10 +31,10 @@
 						<li><a href="/">Home</a></li>
 						<li>
 						<% if (user == false) { %>
-						<a href="/login" id='logger' class="icon fa-angle-down">Login In</a>
+						<a href="/account" id='logger' class="icon fa-angle-down">Login In</a>
 						<ul id='signIn'>
 							<li>
-							<form id='logIn' method='post' action='/login'>
+							<form id='logIn' method='post' action='/account'>
 								<div class="12u">
 									<input type="text" name="username" id="name" value="" required="" placeholder="User Name" />
 								</div>
@@ -46,7 +46,7 @@
 								</li>
 							</ul>
 						</li>
-						<li><a href="/signUp" class="button">Sign Up</a></li>
+						<li><a href="/account/signUp" class="button">Sign Up</a></li>
 						<% } else { %>
 						<li><a href="/profile"><%= user %></a></li>
 						<li><a href="games" id='games' class="icon fa-angle-down">Games</a></li>
@@ -72,7 +72,7 @@
 					</div>
 					<% if (user === false) {%>
 					<ul class="actions">
-						<li><a href="/signUp" class="button special">Sign Up</a></li>
+						<li><a href="account/signUp" class="button special">Sign Up</a></li>
 					</ul>
 					<% } %>
 					<header class="major">

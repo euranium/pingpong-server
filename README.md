@@ -46,3 +46,23 @@ This is primarily for entertainment puposes.
 
 ## licensing
 Read LICENSE
+
+## Web site layout
+
+-Index
+	--homepage
+-account
+	--login
+	--logout
+	--signup
+-profile
+	--personal profile
+		--personal settings
+	--all other users
+		--other user
+-games
+	--log game
+	--games wanted
+	--tournament
+		--create tournament
+		--log tournament games

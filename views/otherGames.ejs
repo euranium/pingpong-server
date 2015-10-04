@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<% include proHeader %>
+<!-- Main -->
+<div id="main">
+
+	<!-- Intro -->
+
+	<!-- Portfolio -->
+	<section id="portfolio" class="two">
+		<div class="container">
+
+			<header>
+				<h2>Make a game</h2>
+			</header>
+			
+			<form method="post" action="#">
+					<ul class='people'>
+					<% for (var i=0; i<people.length; i++) { %>
+					<li><input name='people' value=<%= people[i].name %> type='checkbox'><label for=<%= people[i].name %>><%= people[i].name %></label> </li>
+					<% } %>
+					</ul>
+				<div class="row 50%">
+					<div class="6u"><input type="text" name="name" placeholder="Name" /></div>
+				</div>
+				<div class="row 50%">
+					<div class='3u'><select name='gameType'>
+							<option value='levels'>Levels</option>
+							<option value='score'>Scores</option>
+					</section></div>
+				</div>
+				<div class="row">
+					<div class="12u">
+						<input type="submit" value="Set game" />
+					</div>
+				</div>
+			</form>
+		</div>
+	</section>
+
+	<!-- About Me -->
+
+<% include proFooter %>

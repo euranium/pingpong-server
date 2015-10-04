@@ -9,4 +9,8 @@ README.html
 *.Rhistory
 test.js
 node_sqlite3.*
+<<<<<<< HEAD
 *.log
+=======
+node_modules/
+>>>>>>> 2404e3f5398adc0ea44306f130cbd4fd6da00609
