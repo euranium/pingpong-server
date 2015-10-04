@@ -154,6 +154,7 @@ app.post('/', passport.authenticate('local', {successRedirect: '/', failureRedir
 
 // user creation
 app.post('/signUp', function(req, res, next) {
+    console.log('here');
 	// get the password, password confirmation, username and email
 	var pass0 = req.body.password0, pass1 = req.body.password1, user = req.body.name, email = req.body.email;
 	// parse the inputed text
@@ -175,10 +176,11 @@ app.post('/signUp', function(req, res, next) {
 				// through a standard error and tell the user the user name is already taken
 				// this is most likey the problem, not the db
 				res.render('signUp', {'error': 'user name or email already taken', 'user': false });
-				return console.log('error ', err);
+				console.log('error ', err);
+                return;
 			} else {
 				// TODO: log the user in after their account is created
-				res.redirect('/account/login');
+				res.redirect('/account');
 			}
 		});
 	}
